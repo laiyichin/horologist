@@ -170,6 +170,20 @@ subprojects {
                 // Enable explicit API mode
                 this@configureEach.kotlinOptions.freeCompilerArgs += "-Xexplicit-api=strict"
             }
+
+            // Run with `./gradlew assembleRelease -Phorologist.enableComposeCompilerReports=true --rerun-tasks`
+            if (project.findProperty("horologist.enableComposeCompilerReports") == "true") {
+                freeCompilerArgs = freeCompilerArgs + listOf(
+                    "-P",
+                    "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+                        project.buildDir.absolutePath + "/compose_metrics"
+                )
+                freeCompilerArgs = freeCompilerArgs + listOf(
+                    "-P",
+                    "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+                        project.buildDir.absolutePath + "/compose_metrics"
+                )
+            }
         }
     }
 
