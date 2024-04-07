@@ -35,7 +35,7 @@ public fun AnimatedMediaInfoDisplay(
 ) {
     if (loading) {
         LoadingMediaDisplay(modifier)
-    } else if (media != null) {
+    } else if (media != null && media is MediaUiModel.MediaUiModelLoaded) {
         MarqueeTextMediaDisplay(
             modifier = modifier,
             title = media.title,

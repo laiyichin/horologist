@@ -47,18 +47,15 @@ import com.google.android.horologist.media.ui.state.model.MediaUiModel
 @ExperimentalHorologistApi
 @Composable
 public fun MediaChip(
-    media: MediaUiModel,
+    media: MediaUiModel.MediaUiModelLoaded,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     defaultTitle: String = "",
     placeholder: Painter? = null,
 ) {
-    val artworkUri = media.artworkUri
-    val title = media.title
-
     MediaChip(
-        title = title.takeIf { it.isNotEmpty() } ?: defaultTitle,
-        artworkPaintable = CoilPaintable(artworkUri, placeholder),
+        title = media.title.takeIf { it.isNotEmpty() } ?: defaultTitle,
+        artworkPaintable = CoilPaintable(media.artworkUri, placeholder),
         onClick = onClick,
         modifier = modifier,
     )

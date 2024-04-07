@@ -21,14 +21,15 @@ import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import com.google.android.horologist.images.base.paintable.Paintable
 
 @ExperimentalHorologistApi
-public data class MediaUiModel(
-    val id: String,
-    val title: String,
-    val subtitle: String = "",
-    val artworkUri: String? = null,
-    val artworkColor: Color? = null,
-    val titleIcon: Paintable? = null,
-) {
-    // Consider making this a field
-    val loading: Boolean get() = title.isEmpty() && subtitle.isEmpty()
+public sealed class MediaUiModel {
+    public data class MediaUiModelLoaded(
+        val id: String,
+        val title: String,
+        val subtitle: String = "",
+        val artworkUri: String? = null,
+        val artworkColor: Color? = null,
+        val titleIcon: Paintable? = null,
+    ) : MediaUiModel()
+
+    public data object MediaUiModelLoading : MediaUiModel()
 }
