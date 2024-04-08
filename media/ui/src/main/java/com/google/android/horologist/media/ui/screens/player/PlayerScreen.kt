@@ -98,7 +98,7 @@ public fun PlayerScreen(
 public fun DefaultMediaInfoDisplay(playerUiState: PlayerUiState, modifier: Modifier = Modifier) {
     MediaInfoDisplay(
         media = playerUiState.media,
-        loading = !playerUiState.connected || playerUiState.media is MediaUiModel.MediaUiModelLoading,
+        loading = !playerUiState.connected || playerUiState.media is MediaUiModel.Loading,
         modifier = modifier,
     )
 }

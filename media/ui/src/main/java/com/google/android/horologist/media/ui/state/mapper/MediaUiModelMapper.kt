@@ -34,7 +34,7 @@ public object MediaUiModelMapper {
             title = defaultTitle
             artist = defaultArtist
         }
-        return MediaUiModel.MediaUiModelLoaded(
+        return MediaUiModel.Ready(
             id = media.id,
             title = title,
             subtitle = artist,

@@ -33,6 +33,7 @@ import com.google.android.horologist.media.ui.screens.player.DefaultPlayerScreen
 import com.google.android.horologist.media.ui.screens.player.PlayerScreen
 import com.google.android.horologist.media.ui.state.PlayerUiController
 import com.google.android.horologist.media.ui.state.PlayerUiState
+import com.google.android.horologist.media.ui.state.model.MediaUiModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 
@@ -49,7 +50,12 @@ fun UampMediaPlayerScreen(
     PlayerScreen(
         modifier = modifier,
         background = {
-            val artworkUri = it.media?.artworkUri
+            val metadata = it.media
+            val artworkUri = if (metadata is MediaUiModel.Ready) {
+                metadata.artworkUri
+            } else {
+                null
+            }
             ArtworkColorBackground(
                 artworkUri = artworkUri,
                 defaultColor = MaterialTheme.colors.primary,
@@ -62,7 +68,7 @@ fun UampMediaPlayerScreen(
             if (settingsState.animated) {
                 AnimatedMediaInfoDisplay(
                     media = playerUiState.media,
-                    loading = !playerUiState.connected || playerUiState.media?.loading == true,
+                    loading = !playerUiState.connected || playerUiState.media is MediaUiModel.Loading,
                 )
             } else {
                 DefaultMediaInfoDisplay(playerUiState)

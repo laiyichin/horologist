@@ -22,7 +22,7 @@ import com.google.android.horologist.images.base.paintable.Paintable
 
 @ExperimentalHorologistApi
 public sealed class MediaUiModel {
-    public data class MediaUiModelLoaded(
+    public data class Ready(
         val id: String,
         val title: String,
         val subtitle: String = "",
@@ -31,5 +31,5 @@ public sealed class MediaUiModel {
         val titleIcon: Paintable? = null,
     ) : MediaUiModel()
 
-    public data object MediaUiModelLoading : MediaUiModel()
+    public object Loading : MediaUiModel()
 }
