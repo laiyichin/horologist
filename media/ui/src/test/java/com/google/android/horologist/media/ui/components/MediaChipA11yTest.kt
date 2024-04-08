@@ -52,7 +52,7 @@ class MediaChipA11yTest : WearLegacyA11yTest() {
     fun a11y() {
         runComponentTest {
             MediaChip(
-                media = MediaUiModel(
+                media = MediaUiModel.Ready(
                     id = "id",
                     title = "Red Hot Chilli Peppers",
                     artworkUri = FakeImageLoader.TestIconResourceUri,
