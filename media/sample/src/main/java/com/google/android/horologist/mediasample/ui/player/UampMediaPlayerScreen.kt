@@ -50,12 +50,7 @@ fun UampMediaPlayerScreen(
     PlayerScreen(
         modifier = modifier,
         background = {
-            val metadata = it.media
-            val artworkUri = if (metadata is MediaUiModel.Ready) {
-                metadata.artworkUri
-            } else {
-                null
-            }
+            val artworkUri = (it.media as? MediaUiModel.Ready)?.artworkUri
             ArtworkColorBackground(
                 artworkUri = artworkUri,
                 defaultColor = MaterialTheme.colors.primary,

@@ -32,7 +32,7 @@ import com.google.android.horologist.media.ui.state.model.MediaUiModel
 public fun MediaInfoDisplay(media: MediaUiModel?, loading: Boolean, modifier: Modifier = Modifier) {
     if (loading) {
         LoadingMediaDisplay(modifier)
-    } else if (media != null && media is MediaUiModel.Ready) {
+    } else if (media is MediaUiModel.Ready) {
         TrackMediaDisplay(media = media, modifier = modifier)
     } else {
         NothingPlayingDisplay(modifier)
