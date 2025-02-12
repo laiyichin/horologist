@@ -17,13 +17,13 @@
 plugins {
     id("com.android.library")
     id("com.google.devtools.ksp")
-    id("org.jetbrains.dokka")
-    id("me.tylerbwong.gradle.metalava")
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.metalavaGradle)
     kotlin("android")
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26
@@ -32,8 +32,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
@@ -41,7 +41,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = JavaVersion.VERSION_17.majorVersion
         freeCompilerArgs = freeCompilerArgs +
             listOf(
                 "-opt-in=com.google.android.horologist.annotations.ExperimentalHorologistApi",
@@ -75,9 +75,7 @@ android {
 }
 
 metalava {
-    sourcePaths.setFrom("src/main")
     filename.set("api/current.api")
-    reportLintsAsErrors.set(true)
 }
 
 dependencies {
@@ -89,12 +87,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.corektx)
     implementation(libs.androidx.wear)
-    implementation(project.findProject(":media-lib-common") ?: libs.androidx.media3.common)
-    implementation(project.findProject(":media-lib-exoplayer") ?: libs.androidx.media3.exoplayer)
-    implementation(
-        project.findProject(":media-lib-exoplayer-workmanager")
-            ?: libs.androidx.media3.exoplayerworkmanager,
-    )
+    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.exoplayerworkmanager)
     implementation(libs.room.common)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
@@ -106,13 +101,10 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(
-        project.findProject(":media-lib-exoplayer") ?: libs.androidx.media3.exoplayer,
+        libs.androidx.media3.exoplayer,
     )
-    testImplementation(project.findProject(":media-test-utils") ?: libs.androidx.media3.testutils)
-    testImplementation(
-        project.findProject(":media-test-utils-robolectric")
-            ?: libs.androidx.media3.testutils.robolectric,
-    )
+    testImplementation(libs.androidx.media3.testutils)
+    testImplementation(libs.androidx.media3.testutils.robolectric)
 }
 
 tasks.withType<org.jetbrains.dokka.gradle.DokkaTaskPartial>().configureEach {

@@ -20,12 +20,14 @@ import android.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.ui.unit.LayoutDirection
-import com.google.accompanist.testharness.TestHarness
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.FontScale
 import com.google.android.horologist.images.base.paintable.DrawableResPaintable
 import com.google.android.horologist.images.base.paintable.ImageVectorPaintable.Companion.asPaintable
 import com.google.android.horologist.screenshots.rng.WearLegacyComponentTest
 import org.junit.Test
+import org.robolectric.annotation.Config
 
 class OutlinedCompactChipTest : WearLegacyComponentTest() {
 
@@ -34,7 +36,7 @@ class OutlinedCompactChipTest : WearLegacyComponentTest() {
         runComponentTest {
             OutlinedCompactChip(
                 onClick = { },
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
             )
         }
     }
@@ -44,7 +46,7 @@ class OutlinedCompactChipTest : WearLegacyComponentTest() {
         runComponentTest {
             OutlinedCompactChip(
                 onClick = { },
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 icon = Icons.Filled.Add.asPaintable(),
             )
         }
@@ -65,7 +67,7 @@ class OutlinedCompactChipTest : WearLegacyComponentTest() {
         runComponentTest {
             OutlinedCompactChip(
                 onClick = { },
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 icon = Icons.Filled.Add.asPaintable(),
                 enabled = false,
             )
@@ -85,7 +87,7 @@ class OutlinedCompactChipTest : WearLegacyComponentTest() {
     @Test
     fun withLongTextAndLargestFontScale() {
         runComponentTest {
-            TestHarness(fontScale = LARGEST_FONT_SCALE) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(LARGEST_FONT_SCALE)) {
                 OutlinedCompactChip(
                     onClick = { },
                     label = "Primary label very very very very very very very very very very very very very very very very very long text",
@@ -99,62 +101,21 @@ class OutlinedCompactChipTest : WearLegacyComponentTest() {
         runComponentTest {
             OutlinedCompactChip(
                 onClick = { },
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 icon = DrawableResPaintable(R.drawable.ic_delete),
             )
         }
     }
 
     @Test
+    @Config(qualifiers = "+ar-rXB-ldrtl")
     fun withIconRtl() {
-        runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                OutlinedCompactChip(
-                    onClick = { },
-                    label = "Primary label",
-                    icon = Icons.AutoMirrored.Default.DirectionsBike.asPaintable(),
-                )
-            }
-        }
-    }
-
-    @Test
-    fun mirrored() {
         runComponentTest {
             OutlinedCompactChip(
                 onClick = { },
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 icon = Icons.AutoMirrored.Default.DirectionsBike.asPaintable(),
-                iconRtlMode = IconRtlMode.Mirrored,
             )
-        }
-    }
-
-    @Test
-    fun mirroredRtl() {
-        runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                OutlinedCompactChip(
-                    onClick = { },
-                    label = "Primary label",
-                    icon = Icons.AutoMirrored.Default.DirectionsBike.asPaintable(),
-                    iconRtlMode = IconRtlMode.Mirrored,
-                )
-            }
-        }
-    }
-
-    @Test
-    fun usingDrawableResAsIconMirroredRtl() {
-        runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                OutlinedCompactChip(
-                    onClick = { },
-                    label = "Primary label",
-                    icon = DrawableResPaintable(R.drawable.ic_media_play),
-                    iconRtlMode = IconRtlMode.Mirrored,
-                )
-            }
         }
     }
 

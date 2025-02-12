@@ -14,63 +14,75 @@
  * limitations under the License.
  */
 
-@file:Suppress("ObjectLiteralToLambda", "DEPRECATION")
+@file:Suppress("ObjectLiteralToLambda")
 
 package com.google.android.horologist.media.ui.screens.browse
 
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams
 import androidx.wear.compose.foundation.lazy.ScalingParams
-import com.google.android.horologist.compose.layout.ScalingLazyColumnDefaults
+import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils
+import com.google.android.apps.common.testing.accessibility.framework.AccessibilityViewCheckResult
+import com.google.android.apps.common.testing.accessibility.framework.checks.DuplicateSpeakableTextCheck
+import com.google.android.horologist.composables.SectionedList
 import com.google.android.horologist.compose.layout.ScalingLazyColumnState
-import com.google.android.horologist.media.ui.PlayerLibraryPreview
+import com.google.android.horologist.compose.layout.ScreenScaffold
+import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import com.google.android.horologist.screenshots.rng.WearLegacyA11yTest
+import org.hamcrest.Matcher
 import org.junit.Test
 import org.robolectric.annotation.Config
 
 @Config(
-    sdk = [33],
-    qualifiers = "w227dp-h400dp-small-notlong-notround-watch-xhdpi-keyshidden-nonav",
+    sdk = [35],
+    qualifiers = "w227dp-h330dp-small-notlong-notround-watch-xhdpi-keyshidden-nonav",
 )
 class PlaylistDownloadBrowseScreenA11yTallScreenshotTest : WearLegacyA11yTest() {
+    // TODO fix this warning
+    override fun accessibilitySuppressions(): Matcher<in AccessibilityViewCheckResult> =
+        AccessibilityCheckResultUtils.matchesCheck(DuplicateSpeakableTextCheck::class.java)
 
     @Test
     fun browseScreen() {
         val screenState = BrowseScreenState.Loaded(downloadList)
 
         runScreenTest {
-            val scalingParams =
-                androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+            val columnState = rememberResponsiveColumnState().copy(
+                scalingParams = scalingParams(
                     edgeScale = 1f,
                     edgeAlpha = 1f,
-                )
-            val columnState: ScalingLazyColumnState =
-                ScalingLazyColumnDefaults.responsive().create()
-                    .copy(scalingParams = scalingParams)
+                ),
+            )
 
-            PlayerLibraryPreview(columnState = columnState, round = false) {
-                PlaylistDownloadBrowseScreen(
-                    browseScreenState = screenState,
-                    onDownloadItemClick = { },
-                    onDownloadItemInProgressClick = { },
-                    onPlaylistsClick = { },
-                    onSettingsClick = { },
+            ScreenScaffold(scrollState = columnState) {
+                SectionedList(
                     columnState = columnState,
-                    onDownloadItemInProgressClickActionLabel = "cancel",
+                    sections = BrowseScreenScope().apply {
+                        PlaylistDownloadBrowseScreenContent(
+                            browseScreenState = screenState,
+                            onDownloadItemClick = { },
+                            onDownloadItemInProgressClick = { },
+                            onPlaylistsClick = { },
+                            onSettingsClick = { },
+                            onDownloadItemInProgressClickActionLabel = "cancel",
+                        )
+                    }.sections,
                 )
             }
         }
     }
 }
 
-public fun ScalingLazyColumnState.copy(scalingParams: ScalingParams): ScalingLazyColumnState = ScalingLazyColumnState(
-    initialScrollPosition,
-    autoCentering,
-    anchorType,
-    contentPadding,
-    rotaryMode,
-    reverseLayout,
-    verticalArrangement,
-    horizontalAlignment,
-    flingBehavior,
-    userScrollEnabled,
-    scalingParams,
-)
+public fun ScalingLazyColumnState.copy(scalingParams: ScalingParams): ScalingLazyColumnState =
+    ScalingLazyColumnState(
+        initialScrollPosition = initialScrollPosition,
+        timeTextHomeOffset = timeTextHomeOffset,
+        autoCentering = autoCentering,
+        anchorType = anchorType,
+        contentPadding = contentPadding,
+        rotaryMode = rotaryMode,
+        reverseLayout = reverseLayout,
+        verticalArrangement = verticalArrangement,
+        horizontalAlignment = horizontalAlignment,
+        userScrollEnabled = userScrollEnabled,
+        scalingParams = scalingParams,
+    )

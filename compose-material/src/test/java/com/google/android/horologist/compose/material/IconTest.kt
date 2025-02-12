@@ -19,12 +19,11 @@ package com.google.android.horologist.compose.material
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeDown
 import androidx.compose.material.icons.outlined.Abc
-import androidx.compose.ui.unit.LayoutDirection
-import com.google.accompanist.testharness.TestHarness
 import com.google.android.horologist.images.base.paintable.DrawableResPaintable
 import com.google.android.horologist.images.base.paintable.ImageVectorPaintable.Companion.asPaintable
 import com.google.android.horologist.screenshots.rng.WearLegacyComponentTest
 import org.junit.Test
+import org.robolectric.annotation.Config
 
 class IconTest : WearLegacyComponentTest() {
 
@@ -39,38 +38,13 @@ class IconTest : WearLegacyComponentTest() {
     }
 
     @Test
+    @Config(qualifiers = "+ar-rXB-ldrtl")
     fun defaultRtl() {
-        runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                Icon(
-                    paintable = Icons.Outlined.Abc.asPaintable(),
-                    contentDescription = "contentDescription",
-                )
-            }
-        }
-    }
-
-    @Test
-    fun mirrored() {
         runComponentTest {
             Icon(
                 paintable = Icons.Outlined.Abc.asPaintable(),
                 contentDescription = "contentDescription",
-                rtlMode = IconRtlMode.Mirrored,
             )
-        }
-    }
-
-    @Test
-    fun mirroredRtl() {
-        runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                Icon(
-                    paintable = Icons.Outlined.Abc.asPaintable(),
-                    contentDescription = "contentDescription",
-                    rtlMode = IconRtlMode.Mirrored,
-                )
-            }
         }
     }
 
@@ -85,14 +59,13 @@ class IconTest : WearLegacyComponentTest() {
     }
 
     @Test
+    @Config(qualifiers = "+ar-rXB-ldrtl")
     fun autoMirroredRtl() {
         runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                Icon(
-                    paintable = Icons.AutoMirrored.Outlined.VolumeDown.asPaintable(),
-                    contentDescription = "contentDescription",
-                )
-            }
+            Icon(
+                paintable = Icons.AutoMirrored.Outlined.VolumeDown.asPaintable(),
+                contentDescription = "contentDescription",
+            )
         }
     }
 
@@ -107,38 +80,13 @@ class IconTest : WearLegacyComponentTest() {
     }
 
     @Test
+    @Config(qualifiers = "+ar-rXB-ldrtl")
     fun usingDrawableResAsIconRtl() {
-        runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                Icon(
-                    paintable = DrawableResPaintable(android.R.drawable.ic_media_play),
-                    contentDescription = "contentDescription",
-                )
-            }
-        }
-    }
-
-    @Test
-    fun usingDrawableResAsIconMirrored() {
         runComponentTest {
             Icon(
                 paintable = DrawableResPaintable(android.R.drawable.ic_media_play),
                 contentDescription = "contentDescription",
-                rtlMode = IconRtlMode.Mirrored,
             )
-        }
-    }
-
-    @Test
-    fun usingDrawableResAsIconMirroredRtl() {
-        runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                Icon(
-                    paintable = DrawableResPaintable(android.R.drawable.ic_media_play),
-                    contentDescription = "contentDescription",
-                    rtlMode = IconRtlMode.Mirrored,
-                )
-            }
         }
     }
 }

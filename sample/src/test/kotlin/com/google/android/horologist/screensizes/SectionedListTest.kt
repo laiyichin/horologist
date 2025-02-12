@@ -20,13 +20,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.wear.compose.material.PositionIndicator
-import androidx.wear.compose.material.Scaffold
-import com.google.android.horologist.compose.layout.ResponsiveTimeText
-import com.google.android.horologist.compose.layout.ScalingLazyColumnDefaults
+import androidx.wear.compose.material.MaterialTheme
+import androidx.wear.compose.material.TimeText
+import com.google.android.horologist.compose.layout.AppScaffold
 import com.google.android.horologist.compose.layout.ScalingLazyColumnState
-import com.google.android.horologist.compose.layout.scrollAway
+import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import com.google.android.horologist.compose.tools.Device
 import com.google.android.horologist.screenshots.FixedTimeSource
 import com.google.android.horologist.sectionedlist.SectionedListMenuScreen
@@ -35,7 +33,7 @@ class SectionedListTest(device: Device) : WearLegacyScreenSizeTest(device = devi
 
     @Composable
     override fun Content() {
-        val columnState = ScalingLazyColumnDefaults.responsive().create()
+        val columnState = rememberResponsiveColumnState()
 
         SectionedListPreview(columnState) {
             SectionedListMenuScreen(
@@ -50,19 +48,11 @@ class SectionedListTest(device: Device) : WearLegacyScreenSizeTest(device = devi
         columnState: ScalingLazyColumnState,
         content: @Composable () -> Unit,
     ) {
-        Scaffold(
+        AppScaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black),
-            positionIndicator = {
-                PositionIndicator(columnState.state)
-            },
-            timeText = {
-                ResponsiveTimeText(
-                    modifier = Modifier.scrollAway(columnState),
-                    timeSource = FixedTimeSource,
-                )
-            },
+                .background(MaterialTheme.colors.background),
+            timeText = { TimeText(timeSource = FixedTimeSource) },
         ) {
             content()
         }

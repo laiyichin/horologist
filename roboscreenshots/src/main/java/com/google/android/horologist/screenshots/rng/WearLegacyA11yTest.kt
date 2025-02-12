@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
@@ -43,15 +44,23 @@ import coil.test.FakeImageLoaderEngine
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoboComponent
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
+import com.github.takahirom.roborazzi.RoborazziATFAccessibilityCheckOptions
+import com.github.takahirom.roborazzi.RoborazziATFAccessibilityChecker
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.ThresholdValidator
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.checkRoboAccessibility
+import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckPreset
+import com.google.android.apps.common.testing.accessibility.framework.AccessibilityViewCheckResult
 import com.google.android.horologist.compose.layout.AppScaffold
 import com.google.android.horologist.compose.layout.ResponsiveTimeText
 import com.google.android.horologist.screenshots.FixedTimeSource
 import com.google.android.horologist.screenshots.a11y.A11ySnapshotTransformer
+import com.google.android.horologist.screenshots.rng.WearScreenshotTest.Companion.CorrectLayout
 import com.google.android.horologist.screenshots.rng.WearScreenshotTest.Companion.useHardwareRenderer
 import com.google.android.horologist.screenshots.rng.WearScreenshotTest.Companion.withImageLoader
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 import org.junit.Rule
 import org.junit.rules.TestName
 import org.junit.runner.RunWith
@@ -60,7 +69,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 @Config(
-    sdk = [33],
+    sdk = [35],
     qualifiers = RobolectricDeviceQualifiers.WearOSLargeRound,
 )
 @RunWith(AndroidJUnit4::class)
@@ -77,6 +86,12 @@ public abstract class WearLegacyA11yTest {
 
     public open val imageLoader: FakeImageLoaderEngine? = null
 
+    public open val runAtf: Boolean
+        get() = true
+
+    public open val failureLevel: RoborazziATFAccessibilityChecker.CheckLevel
+        get() = RoborazziATFAccessibilityChecker.CheckLevel.Warning
+
     public fun runScreenTest(
         content: @Composable () -> Unit,
     ) {
@@ -86,20 +101,54 @@ public abstract class WearLegacyA11yTest {
             }
         }
 
+        if (runAtf) {
+            composeRule.onRoot().runAccessibilityChecks()
+        }
+
         captureScreenshot()
     }
 
+    public fun SemanticsNodeInteraction.runAccessibilityChecks() {
+        checkRoboAccessibility(
+            roborazziATFAccessibilityCheckOptions = accessibilityCheckOptions(),
+        )
+    }
+
+    public open fun accessibilityCheckOptions(): RoborazziATFAccessibilityCheckOptions {
+        return RoborazziATFAccessibilityCheckOptions(
+            checker = RoborazziATFAccessibilityChecker(
+                preset = AccessibilityCheckPreset.LATEST,
+                suppressions = accessibilitySuppressions(),
+            ),
+            failureLevel = failureLevel,
+        )
+    }
+
+    public open fun accessibilitySuppressions(): Matcher<in AccessibilityViewCheckResult> {
+        return Matchers.not(Matchers.anything())
+    }
+
     public fun runComponentTest(
+        background: Color? = Color.Black.copy(alpha = 0.3f),
         content: @Composable () -> Unit,
     ) {
         composeRule.setContent {
             withImageLoader(imageLoader) {
-                ComponentScaffold {
-                    content()
+                Box(
+                    modifier = Modifier.run {
+                        if (background != null) {
+                            background(background)
+                        } else {
+                            this
+                        }
+                    },
+                ) {
+                    ComponentScaffold {
+                        content()
+                    }
                 }
             }
         }
-
         captureScreenshot()
     }
 
@@ -126,11 +175,9 @@ public abstract class WearLegacyA11yTest {
         roborazziOptions: RoborazziOptions,
     ) {
         Espresso.onIdle()
-
         val screenImage = captureScreenImageToBitmap(roborazziOptions)
-
-        val annotatedImage = A11ySnapshotTransformer().transform(composeRule.onRoot(), screenImage)
-
+        val annotatedImage =
+            A11ySnapshotTransformer().transform(composeRule.onRoot(), screenImage)
         annotatedImage.captureRoboImage(filePath, roborazziOptions)
     }
 
@@ -154,25 +201,29 @@ public abstract class WearLegacyA11yTest {
 
     @Composable
     public open fun TestScaffold(content: @Composable () -> Unit) {
-        AppScaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            timeText = { ResponsiveTimeText(timeSource = FixedTimeSource) },
-        ) {
-            content()
+        CorrectLayout {
+            AppScaffold(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colors.background),
+                timeText = { ResponsiveTimeText(timeSource = FixedTimeSource) },
+            ) {
+                content()
+            }
         }
     }
 
     @Composable
     public open fun ComponentScaffold(content: @Composable () -> Unit) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black),
-        ) {
-            content()
+        CorrectLayout {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
+            ) {
+                content()
+            }
         }
     }
 

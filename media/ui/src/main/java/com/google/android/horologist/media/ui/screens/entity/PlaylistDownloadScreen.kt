@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalWearMaterialApi::class)
+
 package com.google.android.horologist.media.ui.screens.entity
 
 import android.text.format.Formatter
@@ -49,13 +51,12 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.CircularProgressIndicator
+import androidx.wear.compose.material.ExperimentalWearMaterialApi
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.ProgressIndicatorDefaults
 import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import com.google.android.horologist.composables.PlaceholderChip
-import com.google.android.horologist.compose.layout.ScalingLazyColumnState
-import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import com.google.android.horologist.compose.material.Button
 import com.google.android.horologist.compose.material.ButtonSize
 import com.google.android.horologist.compose.material.Chip
@@ -84,7 +85,6 @@ public fun PlaylistDownloadScreen(
     onShuffleButtonClick: (PlaylistUiModel) -> Unit,
     onPlayButtonClick: (PlaylistUiModel) -> Unit,
     modifier: Modifier = Modifier,
-    columnState: ScalingLazyColumnState = rememberResponsiveColumnState(),
     onDownloadCompletedButtonClick: ((PlaylistUiModel) -> Unit)? = null,
     defaultMediaTitle: String = "",
     downloadItemArtworkPlaceholder: Painter? = null,
@@ -101,7 +101,6 @@ public fun PlaylistDownloadScreen(
         }
 
     EntityScreen(
-        columnState = columnState,
         entityScreenState = entityScreenState,
         headerContent = { DefaultEntityScreenHeader(title = playlistName) },
         loadingContent = { items(count = 2) { PlaceholderChip(colors = ChipDefaults.secondaryChipColors()) } },
@@ -152,18 +151,18 @@ private fun MediaContent(
                     is DownloadMediaUiModel.Size.Known -> {
                         val size = Formatter.formatShortFileSize(
                             LocalContext.current,
-                            downloadMediaUiModel.size.sizeInBytes,
+                            (downloadMediaUiModel.size as DownloadMediaUiModel.Size.Known).sizeInBytes,
                         )
                         stringResource(
                             id = R.string.horologist_playlist_download_download_progress_known_size,
-                            downloadMediaUiModel.progress.progress,
+                            (downloadMediaUiModel.progress as DownloadMediaUiModel.Progress.InProgress).progress,
                             size,
                         )
                     }
 
                     DownloadMediaUiModel.Size.Unknown -> stringResource(
                         id = R.string.horologist_playlist_download_download_progress_unknown_size,
-                        downloadMediaUiModel.progress.progress,
+                        (downloadMediaUiModel.progress as DownloadMediaUiModel.Progress.InProgress).progress,
                     )
                 }
             }
@@ -197,7 +196,7 @@ private fun MediaContent(
                     is DownloadMediaUiModel.Progress.InProgress -> {
                         {
                             val progress by animateFloatAsState(
-                                targetValue = downloadMediaUiModel.progress.progress,
+                                targetValue = (downloadMediaUiModel.progress as DownloadMediaUiModel.Progress.InProgress).progress,
                                 animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                             )
 

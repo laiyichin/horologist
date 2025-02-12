@@ -23,6 +23,10 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.protobuf")
     kotlin("android")
+    kotlin("plugin.serialization")
+    alias(libs.plugins.roborazzi)
+    alias(libs.plugins.compose.compiler)
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 val localProperties = Properties()
@@ -32,13 +36,13 @@ if (localFile.exists()) {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.google.android.horologist.mediasample"
         // Min because of Tiles
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
 
         versionCode = 1
         versionName = "1.0"
@@ -93,17 +97,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = JavaVersion.VERSION_17.majorVersion
         // Allow for widescale experimental APIs in Alpha libraries we build upon
         freeCompilerArgs = freeCompilerArgs + """
             androidx.compose.foundation.ExperimentalFoundationApi
@@ -117,19 +120,21 @@ android {
         }
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+    lint {
+        // https://buganizer.corp.google.com/issues/328279054
+        disable.add("UnsafeOptInUsageError")
     }
+
     namespace = "com.google.android.horologist.mediasample"
 }
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.26.1"
+        artifact = libs.protobuf.protoc.stnd.get().toString()
     }
     plugins {
         id("javalite") {
-            artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
+            artifact = libs.protobuf.protoc.gen.javalite.get().toString()
         }
     }
     generateProtoTasks {
@@ -168,13 +173,14 @@ dependencies {
     implementation(projects.logo)
 
     implementation(
-        project.findProject(":media-lib-datasource-okhttp") ?: libs.androidx.media3.datasourceokhttp,
+        libs.androidx.media3.datasourceokhttp,
     )
 
     implementation(
-        project.findProject(":media-lib-ui") ?: libs.androidx.media3.ui,
+        libs.androidx.media3.ui,
     )
 
+    implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui.util)
 
     implementation(libs.compose.foundation.foundation)
@@ -206,7 +212,11 @@ dependencies {
 
     implementation(libs.moshi.adapters)
     implementation(libs.moshi.kotlin)
+    implementation(projects.media.audioUiModel)
+    implementation(projects.media.uiModel)
+    testImplementation(projects.media.audioUiModel)
     ksp(libs.moshi.kotlin.codegen)
+    implementation(libs.kotlinx.serialization.core)
 
     implementation(libs.androidx.palette.ktx)
 
@@ -224,10 +234,7 @@ dependencies {
 
     implementation(libs.androidx.metrics.performance)
 
-    implementation(
-        project.findProject(":media-lib-exoplayer-workmanager")
-            ?: libs.androidx.media3.exoplayerworkmanager,
-    )
+    implementation(libs.androidx.media3.exoplayerworkmanager)
 
     implementation(libs.room.common)
     implementation(libs.room.ktx)
@@ -241,6 +248,9 @@ dependencies {
     implementation(libs.playservices.auth)
     implementation(libs.kotlinx.coroutines.playservices)
 
+    implementation(libs.osslicenses.parser)
+    implementation(libs.osslicenses.wear.compose)
+
     add("benchmarkImplementation", libs.androidx.runtime.tracing)
 
     debugImplementation(libs.compose.ui.tooling)
@@ -250,6 +260,7 @@ dependencies {
     debugImplementation(libs.androidx.wear.tiles.tooling.preview)
     debugImplementation(libs.androidx.wear.tiles.tooling)
 
+    testImplementation(platform(libs.compose.bom))
     testImplementation(libs.junit)
     testImplementation(libs.truth)
     testImplementation(libs.androidx.test.ext.ktx)
@@ -260,9 +271,11 @@ dependencies {
     testImplementation(libs.dagger.hiltandroidtesting)
     kspTest(libs.dagger.hiltandroidcompiler)
     testImplementation(libs.androidx.work.testing)
+    testImplementation(projects.roboscreenshots)
 
+    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
-    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.test.espressocore)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)
     androidTestImplementation(libs.androidx.test.ext.ktx)
@@ -297,5 +310,5 @@ if (device != null) {
     }
 }
 
-tasks.maybeCreate("prepareKotlinIdeaImport")
-    .dependsOn("generateDebugProto")
+// tasks.maybeCreate("prepareKotlinIdeaImport")
+//    .dependsOn("generateDebugProto")

@@ -16,6 +16,12 @@
     },
     {
       "matchPackagePatterns": [
+        "androidx.compose:compose-bom"
+      ],
+      "allowedVersions": "/-alpha/"
+    },
+    {
+      "matchPackagePatterns": [
         "org.jetbrains.kotlin.*"
       ],
       "groupName": "kotlin"
@@ -28,9 +34,15 @@
     },
     {
       "matchPackagePatterns": [
-        "com.android.tools.build:gradle"
+        "org.jetbrains.kotlinx:kotlinx-serialization-.*"
       ],
-      "allowedVersions": "<8.3.0"
+      "groupName": "kotlin"
+    },
+    {
+      "matchPackagePatterns": [
+        "com.mikepenz:multiplatform-markdown-renderer"
+      ],
+      "allowedVersions": "/coil2/"
     }
   ]
 }

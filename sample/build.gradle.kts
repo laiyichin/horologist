@@ -14,23 +14,31 @@
  * limitations under the License.
  */
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter.ofPattern
+import java.util.Locale
+
 plugins {
     id("com.android.application")
     kotlin("android")
     alias(libs.plugins.roborazzi)
+    kotlin("plugin.serialization")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.google.android.horologist.sample"
         // Min because of Tiles
         minSdk = 26
-        targetSdk = 30
+        targetSdk = 34
 
-        versionCode = 1
-        versionName = "1.0"
+        val date = LocalDate.now()
+
+        versionCode = date.format(ofPattern("yyyyMMdd", Locale.ROOT)).toInt()
+        versionName = date.toString()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -55,22 +63,19 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    buildFeatures {
-        compose = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = JavaVersion.VERSION_17.majorVersion
         // Allow for widescale experimental APIs in Alpha libraries we build upon
         freeCompilerArgs = freeCompilerArgs +
             """
             androidx.compose.ui.ExperimentalComposeUiApi
             androidx.wear.compose.material.ExperimentalWearMaterialApi
             com.google.android.horologist.annotations.ExperimentalHorologistApi
+            androidx.compose.foundation.ExperimentalFoundationApi
             kotlin.RequiresOptIn
             kotlinx.coroutines.ExperimentalCoroutinesApi
             """.trim().split("\\s+".toRegex()).map {
@@ -81,15 +86,13 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
-            all {
-                it.systemProperty("screenshot.record", findProperty("screenshot.record") ?: "false")
-            }
         }
         animationsDisabled = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+    lint {
+        // https://buganizer.corp.google.com/issues/328279054
+        disable.add("UnsafeOptInUsageError")
     }
 
     namespace = "com.google.android.horologist.sample"
@@ -98,6 +101,7 @@ android {
 dependencies {
     api(projects.annotations)
 
+    implementation(platform(libs.compose.bom))
     implementation(projects.composeLayout)
     implementation(projects.media.audio)
     implementation(projects.media.audioUi)
@@ -117,6 +121,7 @@ dependencies {
 
     implementation(libs.compose.ui.util)
 
+    implementation(libs.compose.animation.animationgraphics)
     implementation(libs.compose.foundation.foundation)
     implementation(libs.compose.material.iconsext)
 
@@ -141,12 +146,18 @@ dependencies {
     implementation(libs.compose.ui.toolingpreview)
     implementation(libs.androidx.wear.tooling.preview)
 
+    implementation(libs.kotlinx.serialization.core)
+    implementation(projects.media.audioUiModel)
+    testImplementation(projects.media.audioUiModel)
+    testImplementation(projects.media.uiModel)
+
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(projects.composeTools)
     debugImplementation(libs.androidx.wear.tiles.tooling.preview)
     debugImplementation(libs.androidx.wear.tiles.tooling)
     releaseCompileOnly(projects.composeTools)
 
+    testImplementation(platform(libs.compose.bom))
     testImplementation(libs.junit)
     testImplementation(libs.truth)
     testImplementation(projects.composeTools)
@@ -154,8 +165,9 @@ dependencies {
     testImplementation(projects.roboscreenshots)
     testImplementation(libs.robolectric)
 
+    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
-    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.test.espressocore)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)
     androidTestImplementation(libs.androidx.test.ext.ktx)

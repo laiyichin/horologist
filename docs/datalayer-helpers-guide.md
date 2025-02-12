@@ -28,9 +28,9 @@ phone.
 
 2. Add the capabilities
 
-   Add a `wear.xml` file in the `res/values` folder with the following content:
+   Add a `wear.xml` file in the `res/values` folder with the following content.
 
-    ```
+    ```xml
     <resources xmlns:tools="http://schemas.android.com/tools"
         tools:keep="@array/android_wear_capabilities">
         <string-array name="android_wear_capabilities">
@@ -57,6 +57,15 @@ phone.
     ```
 
    on your wear and phone projects respectively.
+
+   After this you will need to add a `wear_keep.xml` file in your `res/raw` folder with the
+   following content:
+
+      ```xml
+    <resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@array/android_wear_capabilities"/>
+   ```
+   NB! Notice that this is a different folder than the first two. `res/raw/wear_keep.xml`. It needs
+   to be `res/raw` folder due to https://issuetracker.google.com/issues/348688201.
 
    For more details, see
    [Specify capability names for detecting your apps](https://developer.android.com/training/wearables/apps/standalone-apps#capability-names).
@@ -192,13 +201,13 @@ To determine whether your Tile(s) are installed, add the following to your `Tile
 In `onTileAddEvent`:
 
 ```kotlin
-wearAppHelper.markTileAsInstalled("SummaryTile")
+wearAppHelper.updateInstalledTiles()
 ```
 
 In `onTileRemoveEvent`:
 
 ```kotlin
-wearAppHelper.markTileAsRemoved("SummaryTile")
+wearAppHelper.updateInstalledTiles()
 ```
 
 ## Deeplink into Tiles settings editor to install a Tile (phone only)

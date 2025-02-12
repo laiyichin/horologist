@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import java.util.Properties
-
 plugins {
-    id("com.gradle.enterprise") version "3.17"
+    id("com.gradle.develocity") version "3.19.1"
 }
 
-gradleEnterprise {
+develocity {
     buildScan {
-        termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = "yes"
+        termsOfUseUrl = "https://gradle.com/terms-of-service"
+        termsOfUseAgree = "yes"
     }
 }
 
@@ -43,6 +41,7 @@ include(":auth:sample:phone")
 include(":auth:sample:shared")
 include(":auth:sample:wear")
 include(":auth:ui")
+include(":compose:animation:animation-graphics")
 include(":compose-layout")
 include(":compose-material")
 include(":compose-tools")
@@ -62,11 +61,13 @@ include(":images:coil")
 include(":logo")
 include(":media:audio")
 include(":media:audio-ui")
+include(":media:audio-ui-model")
 include(":media:core")
 include(":media:backend-media3")
 include(":media:media3-logging")
 include(":media:media3-outputswitcher")
 include(":media:ui")
+include(":media:ui-model")
 include(":media:benchmark")
 include(":media:data")
 include(":media:sample")
@@ -83,13 +84,9 @@ include(":tiles")
 // https://docs.gradle.org/7.4/userguide/declaring_dependencies.html#sec:type-safe-project-accessors
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-val localProperties = Properties()
-val localFile = file("local.properties")
-if (localFile.exists()) {
-    localProperties.load(localFile.reader())
-}
-if (localProperties.getProperty("media3.checkout", "false").toBoolean()) {
-    val extension = gradle as ExtensionAware
-    extension.extra["androidxMediaModulePrefix"] = "media-"
-    apply(from = file("../media/core_settings.gradle"))
+val media3Checkout: String by settings
+
+if (media3Checkout.isNotBlank()) {
+    gradle.extra.set("androidxMediaModulePrefix", "media3-")
+    apply(from = file("$media3Checkout/core_settings.gradle"))
 }

@@ -18,7 +18,11 @@
 
 package com.google.android.horologist.screenshots.rng
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import coil.annotation.ExperimentalCoilApi
 import coil.test.FakeImageLoaderEngine
@@ -27,7 +31,7 @@ import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.ThresholdValidator
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.google.android.horologist.images.coil.FakeImageLoader
+import com.google.android.horologist.screenshots.rng.WearScreenshotTest.Companion.CorrectLayout
 import com.google.android.horologist.screenshots.rng.WearScreenshotTest.Companion.useHardwareRenderer
 import com.google.android.horologist.screenshots.rng.WearScreenshotTest.Companion.withImageLoader
 import org.junit.Rule
@@ -38,7 +42,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 @Config(
-    sdk = [33],
+    sdk = [35],
     qualifiers = RobolectricDeviceQualifiers.WearOSLargeRound,
 )
 @RunWith(AndroidJUnit4::class)
@@ -48,10 +52,10 @@ public abstract class WearLegacyComponentTest {
     @get:Rule
     public val testInfo: TestName = TestName()
 
-    public open val fakeImageLoader: FakeImageLoader? = null
-
     public open fun testName(suffix: String): String =
-        "src/test/snapshots/images/${this.javaClass.`package`?.name}_${this.javaClass.simpleName}_${testInfo.methodName}.png"
+        "src/test/snapshots/images/" +
+            "${this.javaClass.`package`?.name}_${this.javaClass.simpleName}_" +
+            "${testInfo.methodName}$suffix.png"
 
     public open val device: WearDevice? = null
 
@@ -61,6 +65,7 @@ public abstract class WearLegacyComponentTest {
     public open val imageLoader: FakeImageLoaderEngine? = null
 
     public fun runComponentTest(
+        background: Color? = Color.Black.copy(alpha = 0.3f),
         content: @Composable () -> Unit,
     ) {
         device?.let {
@@ -79,8 +84,18 @@ public abstract class WearLegacyComponentTest {
             ),
         ) {
             withImageLoader(imageLoader) {
-                ComponentScaffold {
-                    content()
+                Box(
+                    modifier = Modifier.run {
+                        if (background != null) {
+                            background(background)
+                        } else {
+                            this
+                        }
+                    },
+                ) {
+                    ComponentScaffold {
+                        content()
+                    }
                 }
             }
         }
@@ -88,7 +103,9 @@ public abstract class WearLegacyComponentTest {
 
     @Composable
     public open fun ComponentScaffold(content: @Composable () -> Unit) {
-        content()
+        CorrectLayout {
+            content()
+        }
     }
 
     internal companion object {

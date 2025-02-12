@@ -26,16 +26,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.platform.LocalView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
 import androidx.wear.compose.foundation.rememberActiveFocusRequester
+import androidx.wear.compose.foundation.rotary.rotaryScrollable
 import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import com.google.android.horologist.audio.ui.VolumeViewModel
-import com.google.android.horologist.audio.ui.rotaryVolumeControlsWithFocus
-import com.google.android.horologist.compose.rotaryinput.RotaryDefaults.isLowResInput
+import com.google.android.horologist.audio.ui.volumeRotaryBehavior
 import com.google.android.horologist.media.ui.components.MediaControlButtons
 import com.google.android.horologist.media.ui.components.MediaInfoDisplay
 import com.google.android.horologist.media.ui.state.PlayerUiController
@@ -79,13 +78,14 @@ public fun PlayerScreen(
         mediaDisplay = { mediaDisplay(playerUiState) },
         controlButtons = { controlButtons(playerViewModel.playerUiController, playerUiState) },
         buttons = { buttons(playerUiState) },
-        modifier = modifier.rotaryVolumeControlsWithFocus(
-            focusRequester = focusRequester,
-            volumeUiStateProvider = { volumeUiState },
-            onRotaryVolumeInput = { newVolume -> volumeViewModel.setVolume(newVolume) },
-            localView = LocalView.current,
-            isLowRes = isLowResInput(),
-        ),
+        modifier = modifier
+            .rotaryScrollable(
+                volumeRotaryBehavior(
+                    volumeUiStateProvider = { volumeUiState },
+                    onRotaryVolumeInput = { newVolume -> volumeViewModel.setVolume(newVolume) },
+                ),
+                focusRequester = focusRequester,
+            ),
         background = { background(playerUiState) },
     )
 }
@@ -151,8 +151,10 @@ public fun PlayerScreen(
             val (topSection, middleSection, bottomSection) = createRefs()
             val startGuideline = createGuidelineFromStart(0.0938f)
             val endGuideline = createGuidelineFromEnd(0.0938f)
-            val topGuideline = createGuidelineFromTop(0.12f)
-            val bottomGuideline = createGuidelineFromBottom(0.063f)
+            val topGuideline = createGuidelineFromTop(0.073f)
+            val bottomGuideline = createGuidelineFromBottom(0.0416f)
+            val bottomSectionStartGuideline = createGuidelineFromStart(0.1248f)
+            val bottomSectionEndGuideline = createGuidelineFromEnd(0.1248f)
 
             Box(
                 modifier = Modifier.constrainAs(topSection) {
@@ -187,8 +189,8 @@ public fun PlayerScreen(
                 modifier = Modifier
                     .constrainAs(bottomSection) {
                         top.linkTo(middleSection.bottom)
-                        start.linkTo(startGuideline)
-                        end.linkTo(endGuideline)
+                        start.linkTo(bottomSectionStartGuideline)
+                        end.linkTo(bottomSectionEndGuideline)
                         bottom.linkTo(bottomGuideline)
                         width = Dimension.fillToConstraints
                         height = Dimension.fillToConstraints

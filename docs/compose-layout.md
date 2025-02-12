@@ -93,6 +93,44 @@ AppScaffold {
 }
 ```
 
+## Typesafe Navigation.
+
+This provides an implementation of typesafe navigation for Wear Compose.
+See https://developer.android.com/guide/navigation/design/type-safety for more information.
+
+```kotlin
+import com.google.android.horologist.compose.nav.SwipeDismissableNavHost
+import com.google.android.horologist.compose.nav.composable
+
+@kotlinx.serialization.Serializable
+object Prompt
+
+@kotlinx.serialization.Serializable
+object Settings
+
+@Composable
+fun WearApp(
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberSwipeDismissableNavController(),
+) {
+    AppScaffold(modifier = modifier) {
+        SwipeDismissableNavHost(
+            startDestination = Prompt,
+            navController = navController,
+        ) {
+            composable<Prompt> {
+                SamplePromptScreen(
+                    onSettingsClick = { navController.navigate(Settings) },
+                )
+            }
+            composable<Settings> {
+                SettingsScreen()
+            }
+        }
+    }
+}
+```
+
 ## Box Inset Layout.
 
 Use as a break glass for simple layout to fit within a safe square.
@@ -113,34 +151,28 @@ Box(
 `AmbientAware` allows your UI to react to ambient mode changes. For more information on how Ambient
 mode and Always-on work on Wear OS, see the [developer guidance][always-on].
 
-You should place this composable high up in your design, as it alters the behavior of the Activity.
+You should place this composable high up in your screen, but within navigation routes so that 
+different screens can handle ambient mode differently.
 
 ```kotlin
 @Composable
-fun WearApp() {
-    AmbientAware { ambientStateUpdate ->
-        // App Content here
+fun MyScreen() {
+    AmbientAware { ambientState ->
+        if (ambientState.isAmbient) {
+            val ambientDetails = state.ambientDetails
+            val burnInProtectionRequired = ambientDetails?.burnInProtectionRequired
+            val deviceHasLowBitAmbient = ambientDetails?.deviceHasLowBitAmbient
+            // Device is in ambient (low power) mode
+        } else {
+            // Device is in interactive (high power) mode
+        }
     }
 }
 ```
-
-If you need some screens to use always-on, and others not to, then you can use the additional
-argument supplied to `AmbientAware`.
 
 For example, in a workout app, it is desirable that the main  workout screen uses always-on, but the
 workout summary at the end does not. See the [`ExerciseClient`][exercise-client]
 guide and [samples][health-samples] for more information on building a workout app.
-
-```kotlin
-@Composable
-fun WearApp() {
-    // Hoist state here for your current screen logic
-    
-    AmbientAware(isAlwaysOnScreen = currentScreen.useAlwaysOn) { ambientStateUpdate ->
-        // App Content here
-    }
-}
-```
 
 ## Download
 

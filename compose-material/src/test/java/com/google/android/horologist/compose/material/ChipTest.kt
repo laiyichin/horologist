@@ -22,19 +22,18 @@ import android.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.materialPath
-import androidx.compose.material.icons.outlined.VolumeDown
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.FontScale
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ChipDefaults
-import com.google.accompanist.testharness.TestHarness
 import com.google.android.horologist.images.base.paintable.DrawableResPaintable
 import com.google.android.horologist.images.base.paintable.ImageVectorPaintable.Companion.asPaintable
 import com.google.android.horologist.screenshots.rng.WearLegacyComponentTest
 import org.junit.Test
+import org.robolectric.annotation.Config
 
 class ChipTest : WearLegacyComponentTest() {
 
@@ -42,7 +41,7 @@ class ChipTest : WearLegacyComponentTest() {
     fun default() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
             )
         }
@@ -52,9 +51,9 @@ class ChipTest : WearLegacyComponentTest() {
     fun withSecondaryLabel() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
-                secondaryLabel = "Secondary label",
+                secondaryLabel = stringResource(com.google.android.horologist.compose.material.R.string.secondary_label),
             )
         }
     }
@@ -63,7 +62,7 @@ class ChipTest : WearLegacyComponentTest() {
     fun withIcon() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
                 icon = Icons.Default.Image.asPaintable(),
             )
@@ -74,7 +73,7 @@ class ChipTest : WearLegacyComponentTest() {
     fun withLargeIcon() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
                 icon = Icon32dp.asPaintable(),
                 largeIcon = true,
@@ -86,9 +85,9 @@ class ChipTest : WearLegacyComponentTest() {
     fun withSecondaryLabelAndIcon() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
-                secondaryLabel = "Secondary label",
+                secondaryLabel = stringResource(com.google.android.horologist.compose.material.R.string.secondary_label),
                 icon = Icons.Default.Image.asPaintable(),
             )
         }
@@ -98,9 +97,9 @@ class ChipTest : WearLegacyComponentTest() {
     fun withSecondaryLabelAndLargeIcon() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
-                secondaryLabel = "Secondary label",
+                secondaryLabel = stringResource(com.google.android.horologist.compose.material.R.string.secondary_label),
                 icon = Icon32dp.asPaintable(),
                 largeIcon = true,
             )
@@ -111,9 +110,9 @@ class ChipTest : WearLegacyComponentTest() {
     fun disabled() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
-                secondaryLabel = "Secondary label",
+                secondaryLabel = stringResource(com.google.android.horologist.compose.material.R.string.secondary_label),
                 icon = Icons.Default.Image.asPaintable(),
                 enabled = false,
             )
@@ -133,7 +132,7 @@ class ChipTest : WearLegacyComponentTest() {
     @Test
     fun withLongTextAndLargestFontScale() {
         runComponentTest {
-            TestHarness(fontScale = largestFontScale) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(largestFontScale)) {
                 Chip(
                     label = "Primary label very very very very very very very very very very very very very very very very very long text",
                     onClick = { },
@@ -145,7 +144,7 @@ class ChipTest : WearLegacyComponentTest() {
     @Test
     fun withLongTextAndMediumFontScale() {
         runComponentTest {
-            TestHarness(fontScale = 1.06f) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(1.06f)) {
                 Chip(
                     label = "Primary label very very very very very very very very very very very very very very very very very long text",
                     onClick = { },
@@ -169,7 +168,7 @@ class ChipTest : WearLegacyComponentTest() {
     @Test
     fun withSecondaryLabelAndIconAndLongTextAndLargestFontScale() {
         runComponentTest {
-            TestHarness(fontScale = largestFontScale) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(largestFontScale)) {
                 Chip(
                     label = "Primary label very very very very very very very very long text",
                     onClick = { },
@@ -196,7 +195,7 @@ class ChipTest : WearLegacyComponentTest() {
     @Test
     fun withSecondaryLabelAndLargeIconAndLongTextAndLargestFontScale() {
         runComponentTest {
-            TestHarness(fontScale = largestFontScale) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(largestFontScale)) {
                 Chip(
                     label = "Primary label very very very very very very very very long text",
                     onClick = { },
@@ -212,7 +211,7 @@ class ChipTest : WearLegacyComponentTest() {
     fun usingSmallIcon() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
                 icon = Icon12dp.asPaintable(),
             )
@@ -223,7 +222,7 @@ class ChipTest : WearLegacyComponentTest() {
     fun usingDrawableResAsIcon() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
                 icon = DrawableResPaintable(R.drawable.ic_delete),
             )
@@ -234,7 +233,7 @@ class ChipTest : WearLegacyComponentTest() {
     fun withLargeIconUsingSmallIcon() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
                 icon = Icon12dp.asPaintable(),
                 largeIcon = true,
@@ -246,7 +245,7 @@ class ChipTest : WearLegacyComponentTest() {
     fun usingExtraLargeIcon() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
                 icon = Icon48dp.asPaintable(),
             )
@@ -257,7 +256,7 @@ class ChipTest : WearLegacyComponentTest() {
     fun withLargeIconUsingExtraLargeIcon() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
                 icon = Icon48dp.asPaintable(),
                 largeIcon = true,
@@ -266,16 +265,15 @@ class ChipTest : WearLegacyComponentTest() {
     }
 
     @Test
+    @Config(qualifiers = "+ar-rXB-ldrtl")
     fun withSecondaryLabelAndIconRtl() {
         runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                Chip(
-                    label = "Primary label",
-                    onClick = { },
-                    secondaryLabel = "Secondary label",
-                    icon = Icons.Default.Image.asPaintable(),
-                )
-            }
+            Chip(
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
+                onClick = { },
+                secondaryLabel = stringResource(com.google.android.horologist.compose.material.R.string.secondary_label),
+                icon = Icons.Default.Image.asPaintable(),
+            )
         }
     }
 
@@ -283,9 +281,9 @@ class ChipTest : WearLegacyComponentTest() {
     fun withSecondaryChipColors() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
-                secondaryLabel = "Secondary label",
+                secondaryLabel = stringResource(com.google.android.horologist.compose.material.R.string.secondary_label),
                 icon = Icons.Default.Image.asPaintable(),
                 colors = ChipDefaults.secondaryChipColors(),
             )
@@ -296,9 +294,9 @@ class ChipTest : WearLegacyComponentTest() {
     fun withGradientBackgroundChipColors() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
-                secondaryLabel = "Secondary label",
+                secondaryLabel = stringResource(com.google.android.horologist.compose.material.R.string.secondary_label),
                 icon = Icons.Default.Image.asPaintable(),
                 colors = ChipDefaults.gradientBackgroundChipColors(),
             )
@@ -309,30 +307,14 @@ class ChipTest : WearLegacyComponentTest() {
     fun withImageBackgroundChipColors() {
         runComponentTest {
             Chip(
-                label = "Primary label",
+                label = stringResource(com.google.android.horologist.compose.material.R.string.primary_label),
                 onClick = { },
-                secondaryLabel = "Secondary label",
+                secondaryLabel = stringResource(com.google.android.horologist.compose.material.R.string.secondary_label),
                 icon = Icons.Default.Image.asPaintable(),
                 colors = ChipDefaults.imageBackgroundChipColors(
                     backgroundImagePainter = painterResource(id = R.drawable.ic_dialog_alert),
                 ),
             )
-        }
-    }
-
-    @Test
-    fun withIconMirrored() {
-        runComponentTest {
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                @Suppress("Deprecation")
-                Chip(
-                    label = "Primary label",
-                    onClick = { },
-                    secondaryLabel = "Secondary label",
-                    icon = Icons.Outlined.VolumeDown.asPaintable(),
-                    iconRtlMode = IconRtlMode.Mirrored,
-                )
-            }
         }
     }
 

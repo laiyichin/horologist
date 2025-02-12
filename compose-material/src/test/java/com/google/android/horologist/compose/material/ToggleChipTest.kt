@@ -21,11 +21,14 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.FontScale
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.testharness.TestHarness
+import com.google.android.horologist.images.base.paintable.ImageVectorPaintable.Companion.asPaintable
 import com.google.android.horologist.screenshots.rng.WearLegacyComponentTest
 import org.junit.Test
+import org.robolectric.annotation.Config
 
 class ToggleChipTest : WearLegacyComponentTest() {
 
@@ -35,7 +38,7 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
             )
         }
@@ -47,7 +50,7 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Radio,
             )
         }
@@ -59,7 +62,7 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Checkbox,
             )
         }
@@ -71,7 +74,7 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = false,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
             )
         }
@@ -83,9 +86,9 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
-                secondaryLabel = "Secondary label",
+                secondaryLabel = stringResource(R.string.secondary_label),
             )
         }
     }
@@ -96,9 +99,9 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
-                icon = Icons.Default.Image,
+                icon = Icons.Default.Image.asPaintable(),
             )
         }
     }
@@ -109,10 +112,10 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
-                secondaryLabel = "Secondary label",
-                icon = Icons.Default.Image,
+                icon = Icons.Default.Image.asPaintable(),
+                secondaryLabel = stringResource(R.string.secondary_label),
             )
         }
     }
@@ -123,7 +126,7 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
                 enabled = false,
             )
@@ -136,7 +139,7 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = false,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
                 enabled = false,
             )
@@ -158,7 +161,7 @@ class ToggleChipTest : WearLegacyComponentTest() {
     @Test
     fun withLongTextAndLargestFontScale() {
         runComponentTest {
-            TestHarness(fontScale = largestFontScale) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(largestFontScale)) {
                 ToggleChip(
                     checked = true,
                     onCheckedChanged = { },
@@ -177,7 +180,7 @@ class ToggleChipTest : WearLegacyComponentTest() {
                 onCheckedChanged = { },
                 label = "Primary label very very very very very very very very very very very very very very very very very long text",
                 toggleControl = ToggleChipToggleControl.Switch,
-                icon = Icons.Default.Image,
+                icon = Icons.Default.Image.asPaintable(),
             )
         }
     }
@@ -185,13 +188,13 @@ class ToggleChipTest : WearLegacyComponentTest() {
     @Test
     fun withIconAndLongTextAndLargestFontScale() {
         runComponentTest {
-            TestHarness(fontScale = largestFontScale) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(largestFontScale)) {
                 ToggleChip(
                     checked = true,
                     onCheckedChanged = { },
                     label = "Primary label very very very very very very very very very very very very very very very very very long text",
                     toggleControl = ToggleChipToggleControl.Switch,
-                    icon = Icons.Default.Image,
+                    icon = Icons.Default.Image.asPaintable(),
                 )
             }
         }
@@ -213,7 +216,7 @@ class ToggleChipTest : WearLegacyComponentTest() {
     @Test
     fun withSecondaryLabelAndLongTextAndLargestFontScale() {
         runComponentTest {
-            TestHarness(fontScale = largestFontScale) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(largestFontScale)) {
                 ToggleChip(
                     checked = true,
                     onCheckedChanged = { },
@@ -232,9 +235,9 @@ class ToggleChipTest : WearLegacyComponentTest() {
                 checked = true,
                 onCheckedChanged = { },
                 label = "Primary label very very very very very very very very long text",
-                secondaryLabel = "Secondary label very very very very very very very very very long text",
                 toggleControl = ToggleChipToggleControl.Switch,
-                icon = Icons.Default.Image,
+                icon = Icons.Default.Image.asPaintable(),
+                secondaryLabel = "Secondary label very very very very very very very very very long text",
             )
         }
     }
@@ -242,14 +245,14 @@ class ToggleChipTest : WearLegacyComponentTest() {
     @Test
     fun withIconAndSecondaryLabelAndLongTextAndLargestFontScale() {
         runComponentTest {
-            TestHarness(fontScale = largestFontScale) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(largestFontScale)) {
                 ToggleChip(
                     checked = true,
                     onCheckedChanged = { },
                     label = "Primary label very very very very very very very very long text",
-                    secondaryLabel = "Secondary label very very very very very very very very very long text",
                     toggleControl = ToggleChipToggleControl.Switch,
-                    icon = Icons.Default.Image,
+                    icon = Icons.Default.Image.asPaintable(),
+                    secondaryLabel = "Secondary label very very very very very very very very very long text",
                 )
             }
         }
@@ -261,9 +264,9 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
-                icon = Icon12dp,
+                icon = Icon12dp.asPaintable(),
             )
         }
     }
@@ -274,9 +277,9 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
-                icon = Icon32dp,
+                icon = Icon32dp.asPaintable(),
             )
         }
     }
@@ -289,59 +292,26 @@ class ToggleChipTest : WearLegacyComponentTest() {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
-                secondaryLabel = "Secondary label",
-                icon = Icons.Default.PlayArrow,
+                icon = Icons.Default.PlayArrow.asPaintable(),
+                secondaryLabel = stringResource(R.string.secondary_label),
             )
         }
     }
 
     @Test
+    @Config(qualifiers = "+ar-rXB-ldrtl")
     fun defaultRtl() {
-        runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                ToggleChip(
-                    checked = true,
-                    onCheckedChanged = { },
-                    label = "Primary label",
-                    toggleControl = ToggleChipToggleControl.Switch,
-                    secondaryLabel = "Secondary label",
-                    icon = Icons.Default.PlayArrow,
-                )
-            }
-        }
-    }
-
-    @Test
-    fun mirrored() {
         runComponentTest {
             ToggleChip(
                 checked = true,
                 onCheckedChanged = { },
-                label = "Primary label",
+                label = stringResource(R.string.primary_label),
                 toggleControl = ToggleChipToggleControl.Switch,
-                secondaryLabel = "Secondary label",
-                icon = Icons.Default.PlayArrow,
-                iconRtlMode = IconRtlMode.Mirrored,
+                icon = Icons.Default.PlayArrow.asPaintable(),
+                secondaryLabel = stringResource(R.string.secondary_label),
             )
-        }
-    }
-
-    @Test
-    fun mirroredRtl() {
-        runComponentTest {
-            TestHarness(layoutDirection = LayoutDirection.Rtl) {
-                ToggleChip(
-                    checked = true,
-                    onCheckedChanged = { },
-                    label = "Primary label",
-                    toggleControl = ToggleChipToggleControl.Switch,
-                    secondaryLabel = "Secondary label",
-                    icon = Icons.Default.PlayArrow,
-                    iconRtlMode = IconRtlMode.Mirrored,
-                )
-            }
         }
     }
 

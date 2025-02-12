@@ -57,7 +57,7 @@ public fun AlertDialog(
     message: String? = null,
     okButtonContentDescription: String = stringResource(android.R.string.ok),
     cancelButtonContentDescription: String = stringResource(android.R.string.cancel),
-    state: ScalingLazyColumnState = rememberColumnState(
+    @Suppress("DEPRECATION") state: ScalingLazyColumnState = rememberColumnState(
         ScalingLazyColumnDefaults.responsive(),
     ),
     content: (ScalingLazyListScope.() -> Unit)? = null,
@@ -98,7 +98,7 @@ public fun AlertDialog(
     icon: @Composable (() -> Unit)? = null,
     title: String? = null,
     message: String? = null,
-    state: ScalingLazyColumnState = rememberColumnState(
+    @Suppress("DEPRECATION") state: ScalingLazyColumnState = rememberColumnState(
         ScalingLazyColumnDefaults.responsive(),
     ),
     content: (ScalingLazyListScope.() -> Unit)? = null,
@@ -123,6 +123,7 @@ public fun AlertDialog(
 @ExperimentalHorologistApi
 @Composable
 public fun AlertContent(
+    modifier: Modifier = Modifier,
     onCancel: (() -> Unit)? = null,
     onOk: (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
@@ -130,7 +131,7 @@ public fun AlertContent(
     message: String? = null,
     okButtonContentDescription: String = stringResource(android.R.string.ok),
     cancelButtonContentDescription: String = stringResource(android.R.string.cancel),
-    state: ScalingLazyColumnState = rememberColumnState(
+    @Suppress("DEPRECATION") state: ScalingLazyColumnState = rememberColumnState(
         ScalingLazyColumnDefaults.responsive(
             additionalPaddingAtBottom = 0.dp,
         ),
@@ -144,6 +145,7 @@ public fun AlertContent(
     }
 
     ResponsiveDialogContent(
+        modifier = modifier,
         icon = icon,
         title = title?.let {
             {

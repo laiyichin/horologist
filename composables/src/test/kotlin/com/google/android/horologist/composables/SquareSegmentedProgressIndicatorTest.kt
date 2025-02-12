@@ -21,17 +21,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.google.android.horologist.screenshots.rng.WearLegacyScreenTest
 import org.junit.Test
 import org.robolectric.annotation.Config
 
 @Config(
-    sdk = [30],
-    qualifiers = "w227dp-h227dp-small-notlong-notround-watch-xhdpi-keyshidden-nonav",
+    sdk = [35],
+    qualifiers = RobolectricDeviceQualifiers.WearOSSquare,
 )
 class SquareSegmentedProgressIndicatorTest :
     WearLegacyScreenTest() {
@@ -254,5 +256,10 @@ class SquareSegmentedProgressIndicatorTest :
                 )
             }
         }
+    }
+
+    @Composable
+    override fun TestScaffold(content: @Composable () -> Unit) {
+        content()
     }
 }

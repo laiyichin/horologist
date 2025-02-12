@@ -22,6 +22,7 @@ import android.content.Context
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.wear.protolayout.ResourceBuilders
+import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.google.android.horologist.tiles.images.loadImageResource
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,8 +37,8 @@ import org.robolectric.annotation.GraphicsMode
 @SmallTest
 @RunWith(RobolectricTestRunner::class)
 @Config(
-    sdk = [33],
-    qualifiers = "w227dp-h227dp-small-notlong-round-watch-xhdpi-keyshidden-nonav",
+    sdk = [35],
+    qualifiers = RobolectricDeviceQualifiers.WearOSLargeRound,
 )
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class ImagesTest {
@@ -59,7 +60,7 @@ class ImagesTest {
             val imageResource = imageLoader.loadImageResource(context, android.R.drawable.ic_delete)
 
             val inlineResource = imageResource!!.inlineResource!!
-            assertThat(inlineResource.format).isEqualTo(ResourceBuilders.IMAGE_FORMAT_RGB_565)
+            assertThat(inlineResource.format).isEqualTo(ResourceBuilders.IMAGE_FORMAT_ARGB_8888)
             assertThat(inlineResource.widthPx).isEqualTo(64)
             assertThat(inlineResource.heightPx).isEqualTo(64)
         }
@@ -78,7 +79,7 @@ class ImagesTest {
             }
 
             val inlineResource = imageResource!!.inlineResource!!
-            assertThat(inlineResource.format).isEqualTo(ResourceBuilders.IMAGE_FORMAT_RGB_565)
+            assertThat(inlineResource.format).isEqualTo(ResourceBuilders.IMAGE_FORMAT_ARGB_8888)
         }
     }
 }

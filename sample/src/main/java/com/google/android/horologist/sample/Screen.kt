@@ -21,9 +21,6 @@ sealed class Screen(
 ) {
     object Menu : Screen("menu")
     object FillMaxRectangle : Screen("fmr")
-    object ScrollAway : Screen("scrollAway")
-    object ScrollAwaySLC : Screen("scrollAwaySLC")
-    object ScrollAwayColumn : Screen("scrollAwayColumn")
     object Volume : Screen("volume")
     object DatePicker : Screen("datePicker")
     object FromDatePicker : Screen("fromDatePicker")
@@ -34,6 +31,7 @@ sealed class Screen(
     object Network : Screen("network")
 
     object MaterialAlertDialog : Screen("materialAlertDialog")
+    object MaterialAnimatedComponents : Screen("materialAnimatedComponents")
     object MaterialButtonsScreen : Screen("materialButtonsScreen")
     object MaterialCardsScreen : Screen("materialCardsScreen")
     object MaterialChipsScreen : Screen("materialChipsScreen")
@@ -50,19 +48,10 @@ sealed class Screen(
     object MaterialToggleButtonScreen : Screen("materialToggleButtonScreen")
     object MaterialToggleChipScreen : Screen("materialToggleChipScreen")
 
-    object DataLayerNodes : Screen("nodes")
-
     object SectionedListMenuScreen : Screen("sectionedListMenuScreen")
     object SectionedListStatelessScreen : Screen("sectionedListStatelessScreen")
     object SectionedListStatefulScreen : Screen("sectionedListStatefulScreen")
     object SectionedListExpandableScreen : Screen("sectionedListExpandableScreen")
-
-    object RotaryMenuScreen : Screen("rotaryMenuScreen")
-
-    object RotaryScrollScreen : Screen("rotaryScrollScreen")
-    object RotaryScrollReversedScreen : Screen("rotaryScrollReversedScreen")
-    object RotaryScrollWithFlingScreen : Screen("rotaryScrollWithFlingScreen")
-    object RotarySnapListScreen : Screen("rotarySnapListScreen")
 
     object Paging : Screen("paging")
     object PagingItem : Screen("pagingItem?id={id}")

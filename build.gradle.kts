@@ -1,5 +1,10 @@
 import com.android.build.gradle.LibraryExtension
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.SonatypeHost
+import java.net.URI
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URL
 import java.util.Properties
 
@@ -27,29 +32,60 @@ buildscript {
 
     dependencies {
         classpath(libs.android.tools.build.gradle)
-        classpath(libs.android.gradlePlugin)
         classpath(libs.kotlin.gradlePlugin)
 
         classpath(libs.gradleMavenPublishPlugin)
 
-        classpath(libs.dokka)
-
         classpath(libs.dagger.hiltandroidplugin)
+        classpath(libs.oss.licenses.plugin)
     }
 }
 
 plugins {
-    alias(libs.plugins.spotless)
-    alias(libs.plugins.kotlinGradle) apply false
-    alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.protobuf) apply false
-    alias(libs.plugins.gradleMavenPublishPlugin)
-    alias(libs.plugins.metalavaGradle) apply false
+    alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.dependencyAnalysis)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.gradleMavenPublishPlugin)
+    alias(libs.plugins.kotlinGradle) apply false
+    alias(libs.plugins.kotlinx.serialization) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.metalavaGradle) apply false
+    alias(libs.plugins.protobuf) apply false
     alias(libs.plugins.roborazzi) apply false
+    alias(libs.plugins.spotless)
 }
 
 apply(plugin = "org.jetbrains.dokka")
+
+val media3Checkout = project.properties["media3Checkout"]?.toString() ?: ""
+
+if (media3Checkout.isNotBlank()) {
+    allprojects {
+        configurations.all {
+            resolutionStrategy {
+                dependencySubstitution {
+                    substitute(module("androidx.media3:media3-common")).using(project(":media3-lib-common"))
+                    substitute(module("androidx.media3:media3-datasource-okhttp")).using(project(":media3-lib-datasource-okhttp"))
+                    substitute(module("androidx.media3:media3-exoplayer")).using(project(":media3-lib-exoplayer"))
+                    substitute(module("androidx.media3:media3-exoplayer-dash")).using(project(":media3-lib-exoplayer-dash"))
+                    substitute(module("androidx.media3:media3-exoplayer-hls")).using(project(":media3-lib-exoplayer-hls"))
+                    substitute(module("androidx.media3:media3-exoplayer-rtsp")).using(project(":media3-lib-exoplayer-rtsp"))
+                    substitute(module("androidx.media3:media3-exoplayer-workmanager")).using(
+                        project(
+                            ":media3-lib-exoplayer-workmanager"
+                        )
+                    )
+                    substitute(module("androidx.media3:media3-session")).using(project(":media3-lib-session"))
+                    substitute(module("androidx.media3:media3-test-utils")).using(project(":media3-test-utils"))
+                    substitute(module("androidx.media3:media3-test-utils-robolectric")).using(
+                        project(":media3-test-utils-robolectric")
+                    )
+                    substitute(module("androidx.media3:media3-ui")).using(project(":media3-lib-ui"))
+                }
+            }
+        }
+    }
+}
 
 tasks.withType<org.jetbrains.dokka.gradle.DokkaMultiModuleTask>().configureEach {
     outputDirectory.set(rootProject.file("docs/api"))
@@ -65,17 +101,27 @@ allprojects {
         if (composeSnapshot.length > 1) {
             maven(url = uri("https://androidx.dev/snapshots/builds/$composeSnapshot/artifacts/repository/"))
         }
-
         maven {
-            url = uri("https://jitpack.io")
+            url = URI("https://jitpack.io")
             content {
-                includeGroup("com.github.QuickBirdEng.kotlin-snapshot-testing")
+                includeGroup("com.github.droibit.oss-licenses-android")
             }
         }
     }
 
     plugins.withId("com.vanniktech.maven.publish") {
         mavenPublishing {
+            if (project.plugins.hasPlugin("com.android.library")) {
+                configure(
+                    AndroidSingleVariantLibrary(
+                        variant = "release",
+                        sourcesJar = true,
+                        publishJavadocJar = false
+                    )
+                )
+            } else if (project.plugins.hasPlugin("java-library")) {
+                configure(JavaLibrary(javadocJar = JavadocJar.Empty(), sourcesJar = true))
+            }
             publishToMavenCentral(SonatypeHost("https://google.oss.sonatype.org"))
         }
     }
@@ -104,34 +150,20 @@ subprojects {
         }
     }
 
-    configurations.configureEach {
-        resolutionStrategy.eachDependency {
-            // Make sure that we're using the Android version of Guava
-            if (this@configureEach.name.contains("android", ignoreCase = true)
-                && this@eachDependency.requested.group == "com.google.guava"
-                && this@eachDependency.requested.module.name == "guava"
-                && this@eachDependency.requested.version?.contains("jre") == true) {
-                this@eachDependency.requested.version?.replace(
-                    "jre",
-                    "android"
-                )?.let { this@eachDependency.useVersion(it) }
-            }
-        }
-    }
-
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            if (System.getenv("CI") == "true") {
+        compilerOptions {
+            if (rootProject.property("strict.build") == true) {
                 // Treat all Kotlin warnings as errors
                 allWarningsAsErrors = true
             }
-            // Set JVM target to 1.8
-            jvmTarget = "11"
-            freeCompilerArgs = freeCompilerArgs + listOf(
-                // Allow use of @OptIn
-                "-opt-in=kotlin.RequiresOptIn",
-                // Enable default methods in interfaces
-                "-Xjvm-default=all"
+            jvmTarget.set(JvmTarget.JVM_17)
+            freeCompilerArgs.addAll(
+                listOf(
+                    // Allow use of @OptIn
+                    "-opt-in=kotlin.RequiresOptIn",
+                    // Enable default methods in interfaces
+                    "-Xjvm-default=all"
+                )
             )
         }
     }
@@ -200,39 +232,28 @@ subprojects {
                 suppressedFiles.from(file("src/debug/java"))
             }
         }
-        if (plugins.hasPlugin("com.android.library")) {
-            configure<com.android.build.gradle.LibraryExtension> {
-                lint {
-                    // Remove once fixed: https://issuetracker.google.com/196420849
-                    disable.add("ExpiringTargetSdkVersion")
-                }
-            }
-        }
 
+        val buildDir = project.layout.buildDirectory
+        val outputDirectory =
+            buildDir.dir("generated/sources/generateVersionFile")
         val generateVersionFile = tasks.register("generateVersionFile") {
-            val outputDirectory =
-                project.file("${project.buildDir}/generated/sources/generateVersionFile")
 
             doLast {
-                val versionName = project.properties.get("VERSION_NAME") as String
+                val versionName = project.properties["VERSION_NAME"] as String
 
-                val manifestDir = File(outputDirectory, "META-INF")
-                manifestDir.mkdirs()
+                val manifestDir = outputDirectory.get().dir("META-INF")
+                manifestDir.asFile.mkdirs()
                 val name = if (project.parent?.name == "horologist")
                     project.name
                 else
                     project.parent?.name + project.name
-                File(
-                    manifestDir,
+                manifestDir.file(
                     "com.google.android.horologist_$name.version"
-                ).writeText("${versionName}\n")
+                ).asFile.writeText("${versionName}\n")
             }
         }
 
         afterEvaluate {
-            val outputDirectory =
-                project.file("${project.buildDir}/generated/sources/generateVersionFile")
-
             val processResources = tasks.findByName("processResources")
             if (processResources != null) {
                 processResources.dependsOn(generateVersionFile)
@@ -276,18 +297,15 @@ subprojects {
             // any snapshot dependencies
             configurations.configureEach {
                 dependencies.configureEach {
-                    if (this is ProjectDependency) {
-                        // We don't care about internal project dependencies
-                        return@configureEach
+                    // We don't care about internal project dependencies
+                    if (this !is ProjectDependency) {
+                        val depVersion = this.version
+                        if (depVersion != null && depVersion.endsWith("SNAPSHOT")) {
+                            throw IllegalArgumentException(
+                                "Using SNAPSHOT dependency with non-SNAPSHOT library version: $this"
+                            )
+                        }
                     }
-
-//                    val depVersion = dependency.version
-                    // TODO reenable https://github.com/google/horologist/issues/34
-//                    if (depVersion != null && depVersion.endsWith("SNAPSHOT")) {
-//                        throw IllegalArgumentException(
-//                                "Using SNAPSHOT dependency with non-SNAPSHOT library version: $dependency"
-//                        )
-//                    }
                 }
             }
         }

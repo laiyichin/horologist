@@ -14,38 +14,35 @@
  * limitations under the License.
  */
 
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalWearFoundationApi::class)
-
 package com.google.android.horologist.compose.pager
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
+import androidx.wear.compose.foundation.pager.PagerState
+import androidx.wear.compose.foundation.pager.VerticalPager
 import androidx.wear.compose.foundation.rememberActiveFocusRequester
 import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import com.google.android.horologist.compose.layout.ScreenScaffold
-import com.google.android.horologist.compose.rotaryinput.onRotaryInputAccumulated
 import com.google.android.horologist.compose.rotaryinput.rotaryWithPager
 
 /**
  * A Wear Material Compliant Vertical Pager screen.
  *
  * Combines the Compose Foundation Pager, with a VerticalPageIndicator.
- *
- * The screens gets an [onRotaryInputAccumulated] modifier added for RSB handling.
  */
 @Composable
 @ExperimentalHorologistApi
 public fun VerticalPagerScreen(
     state: PagerState,
     modifier: Modifier = Modifier,
-    content: @Composable ((Int) -> Unit),
+    beyondViewportPageCount: Int = 0,
+    userScrollEnabled: Boolean = true,
+    reverseLayout: Boolean = false,
+    key: ((index: Int) -> Any)? = null,
+    content: @Composable (Int) -> Unit,
 ) {
     ScreenScaffold(
         modifier = modifier.fillMaxSize(),
@@ -61,6 +58,10 @@ public fun VerticalPagerScreen(
                 .fillMaxSize()
                 .rotaryWithPager(state, rememberActiveFocusRequester()),
             state = state,
+            beyondViewportPageCount = beyondViewportPageCount,
+            userScrollEnabled = userScrollEnabled,
+            reverseLayout = reverseLayout,
+            key = key,
             flingBehavior = HorizontalPagerDefaults.flingParams(state),
         ) { page ->
             ClippedBox(state) {

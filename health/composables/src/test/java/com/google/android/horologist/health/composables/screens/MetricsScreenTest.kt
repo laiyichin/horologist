@@ -16,8 +16,9 @@
 
 package com.google.android.horologist.health.composables.screens
 
+import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.FontScale
 import androidx.wear.compose.material.PositionIndicator
-import com.google.accompanist.testharness.TestHarness
 import com.google.android.horologist.health.composables.model.MetricUiModel
 import com.google.android.horologist.health.composables.theme.HR_HARD
 import com.google.android.horologist.health.composables.theme.HR_MAXIMUM
@@ -143,13 +144,12 @@ class MetricsScreenTest : WearLegacyScreenTest() {
     }
 
     @Config(
-        sdk = [30],
         qualifiers = largeScreen,
     )
     @Test
     fun metricsScreenFourMetrics_largeScreen_smallestFont() {
         runTest(applyDeviceConfig = false) {
-            TestHarness(fontScale = smallestFontScale) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(smallestFontScale)) {
                 MetricsScreen(
                     firstMetric = MetricUiModel(
                         text = "198",
@@ -179,13 +179,12 @@ class MetricsScreenTest : WearLegacyScreenTest() {
     }
 
     @Config(
-        sdk = [30],
         qualifiers = smallScreen,
     )
     @Test
     fun metricsScreenFourMetrics_smallScreen_largestFont() {
         runTest(applyDeviceConfig = false) {
-            TestHarness(fontScale = largestFontScale) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(largestFontScale)) {
                 MetricsScreen(
                     firstMetric = MetricUiModel(
                         text = "198",

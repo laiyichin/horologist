@@ -16,18 +16,22 @@
 
 package com.google.android.horologist.audio.ui.components.actions
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeDown
 import androidx.compose.material.icons.automirrored.filled.VolumeMute
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.google.android.horologist.audio.ui.R
 import com.google.android.horologist.audio.ui.VolumeUiState
-import com.google.android.horologist.compose.material.IconRtlMode
 
 /**
+ * It is recommended to use [SetAudioOutputButton] as it also provides the information about current
+ * audio output.
+ *
  * Button to launch a screen to control the system volume, using volume up icon as
  * default if no [volumeUiState] is passed in.
  *
@@ -39,6 +43,8 @@ public fun SetVolumeButton(
     modifier: Modifier = Modifier,
     volumeUiState: VolumeUiState? = null,
     enabled: Boolean = true,
+    iconAlignment: Alignment = Alignment.Center,
+    iconPadding: PaddingValues? = null,
 ) {
     SettingsButton(
         modifier = modifier,
@@ -49,7 +55,8 @@ public fun SetVolumeButton(
             volumeUiState?.isMax == false -> Icons.AutoMirrored.Default.VolumeDown
             else -> Icons.AutoMirrored.Default.VolumeUp // volumeUiState == null || volumeUiState.isMax == true
         },
-        iconRtlMode = IconRtlMode.Mirrored,
         contentDescription = stringResource(R.string.horologist_set_volume_content_description),
+        iconAlignment = iconAlignment,
+        iconPadding = iconPadding,
     )
 }

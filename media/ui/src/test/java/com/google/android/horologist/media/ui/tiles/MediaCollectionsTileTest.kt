@@ -20,10 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.wear.protolayout.ActionBuilders
-import com.google.android.horologist.compose.tools.TileLayoutPreview
 import com.google.android.horologist.media.ui.R
 import com.google.android.horologist.media.ui.uamp.UampColors
 import com.google.android.horologist.screenshots.rng.WearLegacyScreenTest
+import com.google.android.horologist.screenshots.tiles.TileLayoutPreview
 import com.google.android.horologist.tiles.images.drawableResToImageResource
 import org.junit.Test
 import org.robolectric.annotation.Config
@@ -35,7 +35,6 @@ class MediaCollectionsTileTest : WearLegacyScreenTest() {
     }
 
     @Config(
-        sdk = [30],
         qualifiers = "+w192dp-h192dp",
     )
     @Test
@@ -44,7 +43,6 @@ class MediaCollectionsTileTest : WearLegacyScreenTest() {
     }
 
     @Config(
-        sdk = [30],
         qualifiers = "w192dp-h192dp-small-notlong-round-watch-hdpi-keyshidden-nonav",
     )
     @Test
@@ -101,10 +99,12 @@ class MediaCollectionsTileTest : WearLegacyScreenTest() {
         }
 
         @Suppress("DEPRECATION")
-        TileLayoutPreview(
-            tileState,
-            resourceState,
-            renderer,
-        )
+        (
+            TileLayoutPreview(
+                tileState,
+                resourceState,
+                renderer,
+            )
+            )
     }
 }

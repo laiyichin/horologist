@@ -16,7 +16,6 @@
 
 package com.google.android.horologist.compose.material
 
-import android.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -42,6 +41,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyListScope
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.ChipColors
@@ -50,10 +50,11 @@ import androidx.wear.compose.material.LocalTextStyle
 import androidx.wear.compose.material.MaterialTheme
 import com.google.android.horologist.annotations.ExperimentalHorologistApi
 import com.google.android.horologist.compose.layout.ScalingLazyColumn
-import com.google.android.horologist.compose.layout.ScalingLazyColumnDefaults.responsive
+import com.google.android.horologist.compose.layout.ScalingLazyColumnDefaults
 import com.google.android.horologist.compose.layout.ScalingLazyColumnState
 import com.google.android.horologist.compose.layout.ScreenScaffold
 import com.google.android.horologist.compose.layout.rememberColumnState
+import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import com.google.android.horologist.images.base.paintable.ImageVectorPaintable
 
 @ExperimentalHorologistApi
@@ -65,13 +66,13 @@ public fun ResponsiveDialogContent(
     message: @Composable (() -> Unit)? = null,
     onOk: (() -> Unit)? = null,
     onCancel: (() -> Unit)? = null,
-    okButtonContentDescription: String = stringResource(R.string.ok),
-    cancelButtonContentDescription: String = stringResource(R.string.cancel),
+    okButtonContentDescription: String = stringResource(android.R.string.ok),
+    cancelButtonContentDescription: String = stringResource(android.R.string.cancel),
     state: ScalingLazyColumnState =
-        rememberColumnState(
-            responsive(
-                firstItemIsFullWidth = icon == null,
-                additionalPaddingAtBottom = 0.dp,
+        rememberResponsiveColumnState(
+            contentPadding = ScalingLazyColumnDefaults.padding(
+                first = ScalingLazyColumnDefaults.ItemType.Dialog,
+                last = ScalingLazyColumnDefaults.ItemType.Dialog,
             ),
         ),
     showPositionIndicator: Boolean = true,
@@ -80,6 +81,11 @@ public fun ResponsiveDialogContent(
     ScreenScaffold(
         modifier = modifier.fillMaxSize(),
         scrollState = if (showPositionIndicator) state else null,
+        positionIndicator = if (showPositionIndicator) {
+            null
+        } else {
+            {}
+        },
         timeText = {},
     ) {
         // This will be applied only to the content.
@@ -107,7 +113,7 @@ public fun ResponsiveDialogContent(
                             Box(
                                 Modifier
                                     .fillMaxWidth(titleMaxWidthFraction)
-                                    .padding(bottom = 8.dp), // 12.dp below icon
+                                    .padding(bottom = if (message == null) 12.dp else 8.dp), // 16.dp or 12.dp below title
                             ) { it() }
                         }
                     }
@@ -132,16 +138,7 @@ public fun ResponsiveDialogContent(
                 }
                 if (onOk != null || onCancel != null) {
                     item {
-                        val width = LocalConfiguration.current.screenWidthDp
-                        val buttonSpacedBy = 12
-                        // Single buttons, or buttons on smaller screens are not meant to be
-                        // responsive.
-                        val buttonWidth = if (width < 225 || onOk == null || onCancel == null) {
-                            ButtonDefaults.DefaultButtonSize
-                        } else {
-                            // 14.52% margin on the sides, 12.dp between.
-                            ((width * (1f - 2 * 0.1452f) - buttonSpacedBy) / 2).dp
-                        }
+                        val (buttonSpacedBy, buttonWidth) = responsiveButtonWidth(if (onOk != null && onCancel != null) 2 else 1)
                         Row(
                             Modifier
                                 .fillMaxWidth()
@@ -149,7 +146,7 @@ public fun ResponsiveDialogContent(
                                     top = if (content != null) 12.dp else 0.dp,
                                 ),
                             horizontalArrangement = spacedBy(
-                                buttonSpacedBy.dp,
+                                buttonSpacedBy,
                                 Alignment.CenterHorizontally,
                             ),
                             verticalAlignment = Alignment.CenterVertically,
@@ -180,7 +177,24 @@ public fun ResponsiveDialogContent(
 }
 
 @Composable
-private fun ResponsiveButton(
+public fun responsiveButtonWidth(
+    buttonCount: Int,
+): Pair<Dp, Dp> {
+    val width = LocalConfiguration.current.screenWidthDp
+    val buttonSpacedBy = 12.dp
+    // Single buttons, or buttons on smaller screens are not meant to be
+    // responsive.
+    val buttonWidth = if (width < 225 || buttonCount != 2) {
+        ButtonDefaults.DefaultButtonSize
+    } else {
+        // 14.56% margin on the sides, 12.dp between.
+        ((width * (1f - 2 * 0.1456f) - buttonSpacedBy.value) / 2).dp
+    }
+    return Pair(buttonSpacedBy, buttonWidth)
+}
+
+@Composable
+public fun ResponsiveButton(
     icon: ImageVector,
     contentDescription: String,
     onClick: () -> Unit,
@@ -224,3 +238,14 @@ internal val titleMaxWidthFraction = 1f - 2f * calculatePaddingFraction(
 // Calculate total padding given global padding and additional padding required inside that.
 internal fun calculatePaddingFraction(extraPadding: Float) =
     extraPadding / (100f - 2f * globalHorizontalPadding)
+
+@Suppress("DEPRECATION")
+@Composable
+public fun centeredDialogColumnState(): ScalingLazyColumnState = rememberColumnState(
+    ScalingLazyColumnDefaults.scalingLazyColumnDefaults(
+        initialCenterIndex = 0,
+        initialCenterOffset = 50,
+        verticalArrangement = spacedBy(4.dp, Alignment.CenterVertically),
+        autoCentering = AutoCenteringParams(itemIndex = 0, itemOffset = 50),
+    ),
+)

@@ -22,16 +22,17 @@ plugins {
     id("com.google.protobuf")
     id("dagger.hilt.android.plugin")
     kotlin("android")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.google.android.horologist.datalayer.sample"
         // Min because of Tiles
         minSdk = 26
-        targetSdk = 30
+        targetSdk = 34
 
         versionCode = 1
         versionName = "1.0"
@@ -59,17 +60,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = JavaVersion.VERSION_17.majorVersion
 
         // Allow for widescale experimental APIs in Alpha libraries we build upon
         freeCompilerArgs = freeCompilerArgs +
@@ -78,15 +78,16 @@ android {
             )
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }
-
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
         }
         animationsDisabled = true
+    }
+
+    lint {
+        // https://buganizer.corp.google.com/issues/328279054
+        disable.add("UnsafeOptInUsageError")
     }
 
     namespace = "com.google.android.horologist.datalayer.sample"
@@ -107,11 +108,11 @@ sourceSets {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.26.1"
+        artifact = libs.protobuf.protoc.stnd.get().toString()
     }
     plugins {
         id("javalite") {
-            artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
+            artifact = libs.protobuf.protoc.gen.javalite.get().toString()
         }
     }
     generateProtoTasks {
@@ -141,6 +142,7 @@ dependencies {
     implementation(projects.tiles)
     implementation(libs.androidx.wear.protolayout.material)
 
+    implementation(platform(libs.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.complications.data)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -169,6 +171,7 @@ dependencies {
     ksp(libs.dagger.hiltandroidcompiler)
     implementation(libs.hilt.navigationcompose)
 
+    testImplementation(platform(libs.compose.bom))
     testImplementation(libs.androidx.navigation.testing)
     testImplementation(libs.androidx.test.espressocore)
     testImplementation(libs.compose.ui.test)
@@ -180,5 +183,5 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
 }
 
-tasks.maybeCreate("prepareKotlinIdeaImport")
-    .dependsOn("generateDebugProto")
+// tasks.maybeCreate("prepareKotlinIdeaImport")
+//    .dependsOn("generateDebugProto")

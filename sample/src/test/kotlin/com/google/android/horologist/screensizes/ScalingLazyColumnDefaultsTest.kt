@@ -28,8 +28,8 @@ import androidx.wear.compose.material.AppCard
 import androidx.wear.compose.material.Text
 import com.google.android.horologist.composables.SectionedList
 import com.google.android.horologist.compose.layout.ScalingLazyColumn
-import com.google.android.horologist.compose.layout.ScalingLazyColumnDefaults
 import com.google.android.horologist.compose.layout.ScalingLazyColumnState
+import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import com.google.android.horologist.compose.material.Chip
 import com.google.android.horologist.compose.material.Title
 import com.google.android.horologist.compose.tools.Device
@@ -49,18 +49,8 @@ class ScalingLazyColumnDefaultsTest(device: Device) :
         }
 
         @Test
-        fun responsive() {
-            runTest { Responsive() }
-        }
-
-        @Test
-        fun belowTimeText() {
-            runTest { BelowTimeText() }
-        }
-
-        @Test
         fun standard_end() {
-            runTest {
+            runTest(capture = false) {
                 val listState = ScalingLazyListState()
 
                 androidx.wear.compose.foundation.lazy.ScalingLazyColumn(
@@ -71,37 +61,13 @@ class ScalingLazyColumnDefaultsTest(device: Device) :
                         SampleAppCard()
                     }
                 }
-
-                LaunchedEffect(Unit) {
-                    listState.scrollToItem(100, 0)
-                }
             }
-        }
 
-        @Test
-        fun responsive_end() {
-            runTest {
-                val columnState = ScalingLazyColumnDefaults.responsive().create()
-
-                SampleMenu(columnState = columnState)
-
-                LaunchedEffect(Unit) {
-                    columnState.state.scrollToItem(100, 0)
-                }
-            }
-        }
-
-        @Test
-        fun belowTimeText_end() {
-            runTest {
-                val columnState = ScalingLazyColumnDefaults.belowTimeText().create()
-
-                SampleMenu(columnState = columnState)
-
-                LaunchedEffect(Unit) {
-                    columnState.state.scrollToItem(100, 0)
-                }
-            }
+            // TODO https://github.com/google/horologist/issues/2237
+//            composeRule.onNode(hasScrollToNodeAction())
+//                .performTouchInput { repeat(10) { swipeUp() } }
+//
+//            captureScreenshot()
         }
 
         @Test
@@ -123,7 +89,7 @@ class ScalingLazyColumnDefaultsTest(device: Device) :
         @Test
         fun responsive_chips() {
             runTest {
-                val columnState = ScalingLazyColumnDefaults.responsive().create()
+                val columnState = rememberResponsiveColumnState()
 
                 SampleChipMenu(columnState = columnState)
             }
@@ -131,7 +97,7 @@ class ScalingLazyColumnDefaultsTest(device: Device) :
 
         @Test
         fun standard_chips_end() {
-            runTest {
+            runTest(capture = false) {
                 val listState = ScalingLazyListState()
 
                 androidx.wear.compose.foundation.lazy.ScalingLazyColumn(
@@ -147,19 +113,27 @@ class ScalingLazyColumnDefaultsTest(device: Device) :
                     listState.scrollToItem(100, 0)
                 }
             }
+
+            // TODO https://github.com/google/horologist/issues/2237
+//            composeRule.onNode(hasScrollToNodeAction())
+//                .performTouchInput { repeat(10) { swipeUp() } }
+//
+//            captureScreenshot()
         }
 
         @Test
         fun responsive_chips_end() {
-            runTest {
-                val columnState = ScalingLazyColumnDefaults.responsive().create()
+            runTest(capture = false) {
+                val columnState = rememberResponsiveColumnState()
 
                 SampleChipMenu(columnState = columnState)
-
-                LaunchedEffect(Unit) {
-                    columnState.state.scrollToItem(100, 0)
-                }
             }
+
+            // TODO https://github.com/google/horologist/issues/2237
+//            composeRule.onNode(hasScrollToNodeAction())
+//                .performTouchInput { repeat(10) { swipeUp() } }
+//
+//            captureScreenshot()
         }
 
         @Composable

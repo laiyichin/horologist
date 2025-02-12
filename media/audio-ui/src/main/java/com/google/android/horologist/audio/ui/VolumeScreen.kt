@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalWearFoundationApi::class)
+
 package com.google.android.horologist.audio.ui
 
 import android.media.AudioManager
@@ -25,18 +27,22 @@ import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
+import androidx.wear.compose.foundation.rememberActiveFocusRequester
+import androidx.wear.compose.foundation.rotary.rotaryScrollable
 import androidx.wear.compose.material.InlineSlider
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Stepper
@@ -47,9 +53,7 @@ import com.google.android.horologist.audio.ui.components.AudioOutputUi
 import com.google.android.horologist.audio.ui.components.DeviceChip
 import com.google.android.horologist.audio.ui.components.toAudioOutputUi
 import com.google.android.horologist.compose.material.Icon
-import com.google.android.horologist.compose.material.IconRtlMode
 import com.google.android.horologist.compose.material.util.DECORATIVE_ELEMENT_CONTENT_DESCRIPTION
-import com.google.android.horologist.compose.rotaryinput.RotaryDefaults.isLowResInput
 import com.google.android.horologist.images.base.paintable.ImageVectorPaintable.Companion.asPaintable
 import kotlin.math.roundToInt
 
@@ -79,11 +83,12 @@ public fun VolumeScreen(
 
     VolumeScreen(
         modifier = modifier
-            .rotaryVolumeControlsWithFocus(
-                volumeUiStateProvider = { volumeViewModel.volumeUiState.value },
-                onRotaryVolumeInput = { newVolume -> volumeViewModel.setVolume(newVolume) },
-                localView = LocalView.current,
-                isLowRes = isLowResInput(),
+            .rotaryScrollable(
+                volumeRotaryBehavior(
+                    volumeUiStateProvider = { volumeViewModel.volumeUiState.value },
+                    onRotaryVolumeInput = { newVolume -> volumeViewModel.setVolume(newVolume) },
+                ),
+                focusRequester = rememberActiveFocusRequester(),
             ),
         volume = { volumeUiState },
         audioOutputUi = audioOutput.toAudioOutputUi(),
@@ -160,7 +165,10 @@ public fun VolumeWithLabelScreen(
         contentSlot = {
             Text(
                 stringResource(id = R.string.horologist_volume_screen_volume_label),
-                style = MaterialTheme.typography.button,
+                style = MaterialTheme.typography.button.copy(
+                    color = MaterialTheme.colors.onBackground,
+                    fontWeight = FontWeight.Normal,
+                ),
                 maxLines = 1,
                 overflow = TextOverflow.Clip,
             )
@@ -225,20 +233,18 @@ public object VolumeScreenDefaults {
     @Composable
     public fun IncreaseIcon() {
         Icon(
-            modifier = Modifier.size(26.dp),
+            modifier = Modifier.size(26.dp).semantics { role = Role.Button },
             paintable = Icons.AutoMirrored.Outlined.VolumeUp.asPaintable(),
             contentDescription = stringResource(id = R.string.horologist_volume_screen_volume_up_content_description),
-            rtlMode = IconRtlMode.Mirrored,
         )
     }
 
     @Composable
     public fun DecreaseIcon() {
         Icon(
-            modifier = Modifier.size(26.dp),
+            modifier = Modifier.size(26.dp).semantics { role = Role.Button },
             paintable = Icons.AutoMirrored.Outlined.VolumeDown.asPaintable(),
             contentDescription = stringResource(id = R.string.horologist_volume_screen_volume_down_content_description),
-            rtlMode = IconRtlMode.Mirrored,
         )
     }
 }

@@ -16,7 +16,13 @@
 
 package com.google.android.horologist.audio.ui.components.actions
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,16 +32,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ButtonDefaults.buttonColors
 import androidx.wear.compose.material.MaterialTheme
-import com.google.android.horologist.audio.VolumeState
 import com.google.android.horologist.composables.UnboundedRippleButton
 import com.google.android.horologist.compose.material.Icon
-import com.google.android.horologist.compose.material.IconRtlMode
 import com.google.android.horologist.images.base.paintable.ImageVectorPaintable.Companion.asPaintable
 
 /**
- * Button to launch a screen to control the system volume.
- *
- * See [VolumeState]
+ * An icon button to launch a screen to control the system.
  */
 @Composable
 public fun SettingsButton(
@@ -43,9 +45,13 @@ public fun SettingsButton(
     imageVector: ImageVector,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    iconRtlMode: IconRtlMode = IconRtlMode.Default,
+    badgeVector: ImageVector? = null,
+    badgeColor: Color = MaterialTheme.colors.primary,
     enabled: Boolean = true,
     iconSize: Dp = 26.dp,
+    badgeSize: Dp = 16.dp,
+    iconAlignment: Alignment = Alignment.Center,
+    iconPadding: PaddingValues? = null,
     tapTargetSize: Dp = 52.dp,
 ) {
     UnboundedRippleButton(
@@ -59,13 +65,23 @@ public fun SettingsButton(
         enabled = enabled,
         rippleRadius = tapTargetSize / 2,
     ) {
-        Icon(
-            paintable = imageVector.asPaintable(),
-            contentDescription = contentDescription,
-            modifier = Modifier
-                .size(iconSize)
-                .align(Alignment.Center),
-            rtlMode = iconRtlMode,
-        )
+        val boxModifier = if (iconPadding != null) Modifier.padding(iconPadding) else Modifier
+        Box(modifier = boxModifier.align(iconAlignment)) {
+            Icon(
+                paintable = imageVector.asPaintable(),
+                contentDescription = contentDescription,
+                modifier = Modifier.size(iconSize),
+            )
+            if (badgeVector != null) {
+                Icon(
+                    paintable = badgeVector.asPaintable(),
+                    contentDescription = contentDescription,
+                    modifier = Modifier.size(badgeSize)
+                        .align(Alignment.CenterEnd)
+                        .offset(badgeSize - 2.dp)
+                        .background(color = badgeColor, shape = CircleShape),
+                )
+            }
+        }
     }
 }

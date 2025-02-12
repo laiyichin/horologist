@@ -21,8 +21,6 @@ package com.google.android.horologist.compose.pager
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -34,6 +32,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
 import androidx.wear.compose.foundation.HierarchicalFocusCoordinator
+import androidx.wear.compose.foundation.pager.HorizontalPager
+import androidx.wear.compose.foundation.pager.PagerState
 import androidx.wear.compose.material.PageIndicatorState
 import com.google.android.horologist.compose.layout.PagerScaffold
 
@@ -46,17 +46,24 @@ import com.google.android.horologist.compose.layout.PagerScaffold
  */
 @Composable
 public fun PagerScreen(
-    modifier: Modifier = Modifier,
     state: PagerState,
-    content: @Composable ((Int) -> Unit),
+    modifier: Modifier = Modifier,
+    beyondViewportPageCount: Int = 0,
+    userScrollEnabled: Boolean = true,
+    reverseLayout: Boolean = false,
+    key: ((index: Int) -> Any)? = null,
+    content: @Composable (Int) -> Unit,
 ) {
     PagerScaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         pagerState = state,
     ) {
         HorizontalPager(
-            modifier = modifier,
             state = state,
+            beyondViewportPageCount = beyondViewportPageCount,
+            userScrollEnabled = userScrollEnabled,
+            reverseLayout = reverseLayout,
+            key = key,
             flingBehavior = HorizontalPagerDefaults.flingParams(state),
         ) { page ->
             ClippedBox(state) {
